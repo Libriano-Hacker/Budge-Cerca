@@ -13,6 +13,7 @@ export type Business = {
   promotion: string;
   color: string;
   initials: string;
+  imageUrl?: string;
 };
 export type Settings = {
   appName: string;
@@ -27,6 +28,14 @@ export type AppData = {
   businesses: Business[];
 };
 export const STORAGE_KEY = "budge-cerca:data:v1";
+export function validPhotoUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
 export const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -161,6 +170,9 @@ export function isAppData(value: unknown): value is AppData {
         ].every((k) => typeof b[k] === "string") &&
         Boolean(b.id) &&
         Boolean(b.name) &&
+        (b.imageUrl === undefined ||
+          (typeof b.imageUrl === "string" &&
+            (!b.imageUrl || validPhotoUrl(b.imageUrl)))) &&
         (value.categories as unknown[]).includes(b.category) &&
         typeof b.featured === "boolean" &&
         isObject(b.coordinates) &&

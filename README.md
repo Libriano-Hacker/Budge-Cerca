@@ -42,7 +42,11 @@ Para probar el resultado publicado, abrí la URL HTTPS del sitio y comprobá que
 - Dashboard con alta, edición y eliminación de locales y categorías; importación/exportación de copias JSON validadas.
 - Diseño adaptable e instalación desde navegadores compatibles mediante manifiesto y service worker. Se necesita HTTPS para GPS e instalación fuera del entorno local.
 
-La interfaz usa ilustraciones SVG locales; no depende de servidores de imágenes ni tipografías externas. React, TypeScript, Vite, Leaflet y Lucide forman la base técnica. El mapa se descarga por separado al abrir esa vista.
+El diseño usa fondo grafito, acentos lima y naranja, paneles de vidrio, controles con relieve y tipografía Manrope grande, alojada localmente. La portada incluye un barrio 3D con Three.js que responde al puntero y al scroll, tarjetas flotantes, barra de progreso y aparición de secciones al desplazarse. Se puede pausar la escena; se respeta `prefers-reduced-motion` y hay una alternativa visual si WebGL no está disponible. La animación se detiene fuera de pantalla y cuando la pestaña está oculta.
+
+Las imágenes predeterminadas son ilustrativas, generadas para los comercios de ejemplo; no son fotos reales de esos locales. Están almacenadas en `public/media/comercios-atlas.png` y se muestran por rubro sin depender de servidores de imágenes. El dashboard permite asignar una foto propia mediante un enlace HTTPS directo. Si esa foto no carga, se conserva la imagen ilustrativa. Las copias y datos anteriores siguen siendo compatibles.
+
+React, TypeScript, Vite, Three.js, Leaflet y Lucide forman la base técnica. El módulo 3D y el mapa se descargan por separado; la interfaz principal permanece disponible mientras se cargan.
 
 ## Datos y limitaciones
 

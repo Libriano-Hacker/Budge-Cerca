@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import type { AppData, Business, Hours, Settings } from "./domain";
-import { isAppData, normalize, validWhatsapp } from "./domain";
+import { isAppData, normalize, validWhatsapp, validPhotoUrl } from "./domain";
 import { dayNames } from "./data";
 import Modal from "./Modal";
 
@@ -629,6 +629,7 @@ function BusinessForm({
     promotion: business?.promotion || "",
     featured: business?.featured || false,
     color: business?.color || "sand",
+    imageUrl: business?.imageUrl || "",
     lat: business ? String(business.coordinates.lat) : "",
     lng: business ? String(business.coordinates.lng) : "",
   });
@@ -649,6 +650,10 @@ function BusinessForm({
       !draft.category
     ) {
       setError("Completá el nombre, rubro, dirección y descripción.");
+      return;
+    }
+    if (draft.imageUrl.trim() && !validPhotoUrl(draft.imageUrl.trim())) {
+      setError("La foto debe ser un enlace HTTPS público y sin credenciales.");
       return;
     }
     if (draft.whatsapp.trim() && !validWhatsapp(draft.whatsapp)) {
@@ -688,6 +693,7 @@ function BusinessForm({
       promotion: draft.promotion.trim(),
       featured: draft.featured,
       color: draft.color,
+      imageUrl: draft.imageUrl.trim() || undefined,
       coordinates: { lat: Number(draft.lat), lng: Number(draft.lng) },
       initials: draft.name
         .trim()
@@ -762,6 +768,21 @@ function BusinessForm({
           <small>Si no tiene número, dejalo vacío.</small>
         </label>
       </div>
+      <label className="photo-url-field">
+        Foto del comercio (opcional)
+        <input
+          aria-label="Foto del comercio"
+          type="url"
+          value={draft.imageUrl}
+          onChange={(e) => change("imageUrl", e.target.value)}
+          placeholder="https://tu-sitio.com/foto-del-local.jpg"
+          maxLength={2048}
+        />
+        <small>
+          Usá un enlace directo a una foto propia. Si no cargás una, se muestra
+          una imagen ilustrativa del rubro.
+        </small>
+      </label>
       <fieldset className="form-fieldset">
         <legend>Ubicación del comercio</legend>
         <p>
@@ -908,17 +929,17 @@ function BusinessForm({
           />
         </label>
         <label>
-          Color de la tarjeta
+          Acento de la tarjeta
           <select
             value={draft.color}
             onChange={(e) => change("color", e.target.value)}
           >
-            <option value="sand">Arena</option>
-            <option value="sage">Salvia</option>
-            <option value="rose">Rosa</option>
-            <option value="blue">Azul</option>
-            <option value="lilac">Lavanda</option>
-            <option value="peach">Durazno</option>
+            <option value="sand">Ámbar</option>
+            <option value="sage">Lima</option>
+            <option value="rose">Magenta</option>
+            <option value="blue">Cian</option>
+            <option value="lilac">Violeta</option>
+            <option value="peach">Naranja</option>
           </select>
         </label>
         <label className="checkbox-label">

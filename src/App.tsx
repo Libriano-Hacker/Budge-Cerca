@@ -52,7 +52,9 @@ import {
   whatsappUrl,
 } from "./domain";
 import type { AppData, Business, Coordinates } from "./domain";
-import { NeighborhoodArt, StoreArt } from "./Art";
+import BusinessPhoto from "./BusinessPhoto";
+import HeroVisual from "./HeroVisual";
+import useExperience from "./useExperience";
 import Modal from "./Modal";
 import Dashboard from "./Dashboard";
 const BusinessMap = lazy(() => import("./BusinessMap"));
@@ -101,6 +103,7 @@ function loadFavorites(): string[] {
   }
 }
 export default function App() {
+  useExperience();
   const [initial] = useState(readInitial);
   const [data, setData] = useState(initial.data);
   const [warning, setWarning] = useState(initial.warning);
@@ -148,8 +151,8 @@ export default function App() {
       start_url: location.origin + "/",
       scope: location.origin + "/",
       display: "standalone",
-      theme_color: "#134e4a",
-      background_color: "#faf9f6",
+      theme_color: "#080b11",
+      background_color: "#080b11",
       icons: [192, 512].map((size) => ({
         src: `${location.origin}/icon-${size}.png`,
         sizes: `${size}x${size}`,
@@ -265,6 +268,30 @@ export default function App() {
     return (
       <article
         className={`business-card ${featuredCard ? "featured-card" : ""}`}
+        onPointerMove={(e) => {
+          if (e.pointerType === "touch") return;
+          const r = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty(
+            "--tilt-x",
+            `${((e.clientY - r.top) / r.height - 0.5) * -5}deg`,
+          );
+          e.currentTarget.style.setProperty(
+            "--tilt-y",
+            `${((e.clientX - r.left) / r.width - 0.5) * 6}deg`,
+          );
+          e.currentTarget.style.setProperty(
+            "--pointer-x",
+            `${((e.clientX - r.left) / r.width) * 100}%`,
+          );
+          e.currentTarget.style.setProperty(
+            "--pointer-y",
+            `${((e.clientY - r.top) / r.height) * 100}%`,
+          );
+        }}
+        onPointerLeave={(e) => {
+          e.currentTarget.style.setProperty("--tilt-x", "0deg");
+          e.currentTarget.style.setProperty("--tilt-y", "0deg");
+        }}
         key={b.id}
       >
         <div className={`card-cover ${b.color}`}>
@@ -273,7 +300,7 @@ export default function App() {
             onClick={() => setSelected(b)}
             aria-label={`Ver ${b.name}`}
           >
-            <StoreArt kind={b.color} />
+            <BusinessPhoto business={b} />
           </button>
           <span className="cover-badge">
             {featuredCard ? (
@@ -338,9 +365,13 @@ export default function App() {
   }
   return (
     <>
+      <div className="scroll-progress" aria-hidden="true" />
+      <div className="ambient-light" aria-hidden="true" />
       <div className="announcement">
         <span>Hecho para encontrarnos. Pensado para el barrio.</span>
-        <span className="demo-label">Demo · comercios de ejemplo</span>
+        <span className="demo-label">
+          Demo · locales e imágenes ilustrativas
+        </span>
       </div>
       <header className="site-header">
         <div className="header-inner">
@@ -442,13 +473,13 @@ export default function App() {
                   {settings.neighborhood}
                   <ChevronDown size={12} />
                 </span>
+                <span className="hero-kicker">
+                  CERCA DE TODO. LEJOS DE LO COMÚN.
+                </span>
                 <h1>
                   Tu barrio.
                   <br />
                   Todo <span className="hero-word">cerca.</span>
-                  <span className="title-dot" aria-hidden="true">
-                    *
-                  </span>
                 </h1>
                 <p>{settings.intro}</p>
                 <form
@@ -483,29 +514,23 @@ export default function App() {
                   </span>
                 </div>
               </div>
-              <div className="hero-art">
-                <span className="art-note note-top">
-                  <span className="note-icon">
-                    <ShoppingBag size={18} />
+              <HeroVisual
+                businesses={businesses}
+                neighborhood={settings.neighborhood}
+                onSelect={selectBusiness}
+              />
+              <div className="hero-scroll">
+                <button onClick={scrollResults}>
+                  <span className="scroll-mouse">
+                    <ArrowDown size={15} />
                   </span>
-                  <span>
-                    Lo que buscás,<strong>a la vuelta de casa.</strong>
-                  </span>
-                </span>
-                <NeighborhoodArt />
-                <span className="art-note note-bottom">
-                  <span className="mini-avatars">
-                    <i>A</i>
-                    <i>M</i>
-                    <i>J</i>
-                  </span>
-                  <span>
-                    Comprá cerca.<strong>Hacé crecer tu barrio.</strong>
-                  </span>
-                  <Heart size={17} />
-                </span>
-                <span className="art-caption">
-                  EL MEJOR PLAN EMPIEZA ACÁ <span>↗</span>
+                  Deslizá. Tu próxima parada está acá.
+                </button>
+                <span>
+                  <strong>
+                    {businesses.length.toString().padStart(2, "0")}
+                  </strong>{" "}
+                  comercios por descubrir <ArrowRight size={17} />
                 </span>
               </div>
             </section>
@@ -537,7 +562,17 @@ export default function App() {
               </div>
             </section>
           )}
-          <section className="categories-section container">
+          <div className="neighborhood-marquee" aria-hidden="true">
+            <div>
+              {[0, 1].map((i) => (
+                <span key={i}>
+                  COMPRÁ LOCAL <Sparkles /> DESCUBRÍ MÁS <Sparkles /> CONECTÁ
+                  CON TU BARRIO <Sparkles /> TODO CERCA <Sparkles />{" "}
+                </span>
+              ))}
+            </div>
+          </div>
+          <section className="categories-section container" data-reveal>
             <div className="section-topline">
               <h2>¿Qué necesitás encontrar?</h2>
               <span>
@@ -581,14 +616,14 @@ export default function App() {
             !query &&
             category === "Todos" &&
             featured.length > 0 && (
-              <section className="featured-section container">
+              <section className="featured-section container" data-reveal>
                 <div className="section-heading">
                   <div>
                     <span className="eyebrow">
-                      <Sparkles size={13} /> EL BARRIO LOS RECOMIENDA
+                      <Sparkles size={13} /> 01 / SPOTS DEL BARRIO
                     </span>
                     <h2>
-                      Lugares que vale la pena conocer<span>.</span>
+                      Acá pasan cosas buenas<span>.</span>
                     </h2>
                   </div>
                   <button className="text-link" onClick={scrollResults}>
@@ -601,16 +636,20 @@ export default function App() {
                 </div>
               </section>
             )}
-          <section className="results-section container" ref={resultsRef}>
+          <section
+            className="results-section container"
+            ref={resultsRef}
+            data-reveal
+          >
             <div className="section-heading">
               <div>
-                <span className="eyebrow">DESCUBRÍ LO QUE TENÉS CERCA</span>
+                <span className="eyebrow">02 / TU PRÓXIMA PARADA</span>
                 <h2>
                   {view === "promos"
                     ? "Promociones del barrio"
                     : view === "favorites"
                       ? "Tus comercios favoritos"
-                      : "Un barrio lleno de posibilidades"}
+                      : "Encontrá tu próximo lugar"}
                   <span>.</span>
                 </h2>
                 <p className="result-count" aria-live="polite">
@@ -755,7 +794,7 @@ export default function App() {
               </div>
             )}
           </section>
-          <section className="join-section container">
+          <section className="join-section container" data-reveal>
             <div className="join-icon">
               <Store size={33} />
             </div>
@@ -853,7 +892,7 @@ export default function App() {
       {selected && (
         <Modal title={selected.name} onClose={() => setSelected(null)}>
           <div className={`detail-art ${selected.color}`}>
-            <StoreArt kind={selected.color} />
+            <BusinessPhoto business={selected} priority />
           </div>
           <div className="detail-body">
             <div className="detail-tags">
@@ -969,7 +1008,8 @@ export default function App() {
             </div>
             <p className="detail-disclaimer">
               Demo: verificá los datos y la ubicación antes de visitar un local.
-              Los recorridos se abren en Google Maps.
+              Las imágenes iniciales son ilustrativas. Los recorridos se abren
+              en Google Maps.
             </p>
           </div>
         </Modal>

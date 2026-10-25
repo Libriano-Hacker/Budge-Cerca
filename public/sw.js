@@ -1,4 +1,4 @@
-const CACHE = "budge-cerca-v1";
+const CACHE = "budge-cerca-v2-immersive";
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
@@ -15,7 +15,9 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
+          keys
+            .filter((key) => key.startsWith("budge-cerca-") && key !== CACHE)
+            .map((key) => caches.delete(key)),
         ),
       ),
   );

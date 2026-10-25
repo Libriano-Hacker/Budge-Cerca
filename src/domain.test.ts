@@ -8,7 +8,41 @@ import {
   isOpen,
   validWhatsapp,
   whatsappUrl,
+  validPhotoUrl,
 } from "./domain";
+
+describe("Fotos de comercios y compatibilidad", () => {
+  it("acepta HTTPS y rechaza esquemas locales o credenciales en la URL", () => {
+    expect(validPhotoUrl("https://example.com/local.jpg")).toBe(true);
+    expect(validPhotoUrl("http://example.com/local.jpg")).toBe(false);
+    expect(validPhotoUrl("javascript:alert(1)")).toBe(false);
+    expect(validPhotoUrl("https://usuario:clave@example.com/local.jpg")).toBe(
+      false,
+    );
+  });
+  it("conserva copias anteriores y valida el nuevo campo opcional de foto", () => {
+    expect(isAppData(initialData)).toBe(true);
+    expect(
+      isAppData({
+        ...initialData,
+        businesses: [
+          {
+            ...initialData.businesses[0],
+            imageUrl: "https://example.com/local.jpg",
+          },
+        ],
+      }),
+    ).toBe(true);
+    expect(
+      isAppData({
+        ...initialData,
+        businesses: [
+          { ...initialData.businesses[0], imageUrl: "javascript:alert(1)" },
+        ],
+      }),
+    ).toBe(false);
+  });
+});
 
 describe("Búsqueda de comercios", () => {
   it("encuentra nombres y rubros sin exigir tildes o mayúsculas", () => {

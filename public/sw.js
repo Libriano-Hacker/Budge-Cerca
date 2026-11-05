@@ -1,4 +1,4 @@
-const CACHE = "budge-cerca-v2-immersive";
+const CACHE = "budge-cerca-v3-neighborhoods";
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches

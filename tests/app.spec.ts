@@ -128,14 +128,14 @@ test("dashboard cambia marca, agrega rubro y comercio, conserva y elimina datos"
   await page.getByRole("button", { name: "Guardar mi barrio" }).click();
   await expect(page).toHaveTitle("Mi Barrio Cerca · Villa Prueba");
   await page.getByRole("tab", { name: "Rubros" }).click();
-  await page.getByLabel("Nombre del nuevo rubro").fill("Farmacias");
+  await page.getByLabel("Nombre del nuevo rubro").fill("Jugueterías");
   await page.getByRole("button", { name: "Agregar rubro" }).click();
   await page
     .getByRole("button", { name: "Agregar comercio", exact: true })
     .click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByLabel("Nombre del comercio").fill("Farmacia de Prueba");
-  await dialog.getByLabel("Rubro").selectOption("Farmacias");
+  await dialog.getByLabel("Nombre del comercio").fill("Juguetería de Prueba");
+  await dialog.getByLabel("Rubro").selectOption("Jugueterías");
   await dialog
     .getByLabel("Descripción")
     .fill("Atención de prueba para validar el directorio.");
@@ -155,11 +155,13 @@ test("dashboard cambia marca, agrega rubro y comercio, conserva y elimina datos"
   await page.reload();
   await page
     .getByRole("textbox", { name: "Buscar comercios", exact: true })
-    .fill("Farmacia de Prueba");
+    .fill("Juguetería de Prueba");
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();
-  await expect(page.getByText("Villa Prueba").first()).toBeVisible();
+  await expect(
+    page.getByLabel("Seleccionar barrio", { exact: true }),
+  ).toHaveValue("Villa Prueba");
   await page
-    .getByRole("button", { name: "Farmacia de Prueba", exact: true })
+    .getByRole("button", { name: "Juguetería de Prueba", exact: true })
     .click();
   await expect(
     page
@@ -172,28 +174,28 @@ test("dashboard cambia marca, agrega rubro y comercio, conserva y elimina datos"
     .click();
   await admin(page);
   await page
-    .getByRole("button", { name: "Editar Farmacia de Prueba", exact: true })
+    .getByRole("button", { name: "Editar Juguetería de Prueba", exact: true })
     .click();
   await page
     .getByRole("dialog")
     .getByLabel("Nombre del comercio")
-    .fill("Farmacia Editada");
+    .fill("Juguetería Editada");
   await page
     .getByRole("button", { name: "Guardar comercio", exact: true })
     .click();
   await expect(
-    page.getByText("Farmacia Editada", { exact: true }),
+    page.getByText("Juguetería Editada", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Eliminar Farmacia Editada", exact: true })
+    .getByRole("button", { name: "Eliminar Juguetería Editada", exact: true })
     .click();
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Eliminar comercio", exact: true })
     .click();
-  await expect(page.getByText("Farmacia Editada", { exact: true })).toHaveCount(
-    0,
-  );
+  await expect(
+    page.getByText("Juguetería Editada", { exact: true }),
+  ).toHaveCount(0);
 });
 test("sin resultados y diseño sin desborde horizontal", async ({ page }) => {
   await expect(page.locator("body")).toBeVisible();
@@ -212,7 +214,7 @@ test("sin resultados y diseño sin desborde horizontal", async ({ page }) => {
     }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Limpiar", exact: true }).click();
-  await expect(page.getByText("9 comercios encontrados")).toBeVisible();
+  await expect(page.getByText("11 comercios encontrados")).toBeVisible();
 });
 
 test("mapa informa fallas de conexión y sus marcadores abren fichas", async ({
@@ -249,6 +251,7 @@ test("importación valida la copia antes de reemplazar el catálogo", async ({
   await expect(page.getByRole("alert")).toContainText("no es una copia válida");
   const data = {
     ...initialData,
+    neighborhoods: [...initialData.neighborhoods!, "Barrio Importado"],
     settings: { ...initialData.settings, neighborhood: "Barrio Importado" },
   };
   await input.setInputFiles({
@@ -257,14 +260,14 @@ test("importación valida la copia antes de reemplazar el catálogo", async ({
     buffer: Buffer.from(JSON.stringify(data)),
   });
   await expect(
-    page.getByRole("dialog").getByText("9 comercios", { exact: true }),
+    page.getByRole("dialog").getByText("11 comercios", { exact: true }),
   ).toBeVisible();
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Reemplazar datos" })
     .click();
   await page.reload();
-  await expect(page).toHaveTitle("Budge Cerca · Barrio Importado");
+  await expect(page).toHaveTitle("Tu Barrio Cerca · Barrio Importado");
 });
 
 test("PWA conserva el buscador después de recargar sin conexión", async ({

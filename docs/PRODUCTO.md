@@ -1,6 +1,6 @@
-# Budge Cerca: primera propuesta
+# Tu Barrio Cerca: primera propuesta
 
-Una guía móvil para encontrar comercios, servicios y promociones de un barrio. Marca inicial: **Budge Cerca**, barrio **Ing.Budge**. El nombre de la aplicación y del barrio son editables desde el dashboard. El WhatsApp del creador se configuró con el número indicado, interpretado como celular argentino con código internacional.
+Una guía móvil para encontrar comercios, servicios y promociones de un barrio. Marca inicial: **Tu Barrio Cerca**, barrio **Ing.Budge**. El nombre de la aplicación y el barrio inicial son editables desde el dashboard. La portada permite elegir barrios en un desplegable o en solapas, y agregar barrios propios. Cada local se asigna a su zona. El WhatsApp del creador se configuró con el número indicado, interpretado como celular argentino con código internacional.
 
 ## Diseño
 
@@ -40,4 +40,4 @@ Conectar una base de datos y API con control de acceso del lado del servidor. Ag
 
 Cargar locales reales con autorización, coordenadas verificadas y sus números de contacto. Definir condiciones de promociones, términos y política de privacidad. Publicar mediante HTTPS para habilitar GPS e instalación; validar en dispositivos Android/iOS reales. Si se requiere distribución por tiendas, preparar y probar el empaquetado y la publicación correspondientes.
 
-El cambio de nombre del barrio permite revisar la personalización; no crea todavía una instancia o base de datos separada para cada cliente.
+Los catálogos se filtran por el barrio elegido. Los barrios agregados, comercios y selección se guardan en este navegador. Esto permite probar varias zonas; las cuentas, permisos y datos compartidos entre personas requieren todavía un servidor.

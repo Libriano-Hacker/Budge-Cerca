@@ -1,6 +1,6 @@
-# Budge Cerca
+# Tu Barrio Cerca
 
-Guía de comercios para **Ing.Budge**, adaptable a otros barrios. Primer prototipo de una app web instalable (PWA), con buscador público y dashboard de demostración.
+Guía de comercios y servicios con marca **Tu Barrio Cerca**, selección de barrios y punto de partida en **Ing.Budge**. Primer prototipo de una app web instalable (PWA), con buscador público y dashboard de demostración.
 
 ## Desarrollo
 
@@ -34,7 +34,10 @@ Para probar el resultado publicado, abrí la URL HTTPS del sitio y comprobá que
 
 ## Alcance actual
 
+- Selector desplegable y solapas para elegir barrios; opción para agregar nuevos barrios y recordar la selección en este navegador.
+- Cada comercio se asigna a un barrio desde el dashboard. Búsqueda, destacados, promociones y mapa muestran únicamente el barrio seleccionado. Las zonas sin comercios cargados lo indican.
 - Buscador por nombre, rubro o dirección, sin distinguir tildes ni mayúsculas.
+- Rubros ampliados: barberías, centros de spa, peluquerías, estética y uñas, farmacias, veterinarias, pet shops, gimnasios, ópticas, odontología, lavanderías, tecnología, oficios y más.
 - Comercios destacados, favoritos y filtro de abiertos según la hora de Argentina.
 - Fichas con dirección, WhatsApp, horarios por día y promociones.
 - GPS optativo: orden por cercanía y distancias en línea recta; recorridos mediante Google Maps.
@@ -51,6 +54,8 @@ React, TypeScript, Vite, Three.js, Leaflet y Lucide forman la base técnica. El 
 ## Datos y limitaciones
 
 **Los comercios iniciales son ejemplos.** Sus direcciones y posiciones son ilustrativas, y sus números de WhatsApp no están configurados. El contacto del creador está configurado con el número solicitado.
+
+Las versiones anteriores con la marca Budge Cerca se actualizan automáticamente a Tu Barrio Cerca. Se conservan los comercios, promociones, imágenes, favoritos y marcas personalizadas. Los comercios antiguos se asignan a su barrio original. No se agregan de nuevo negocios o rubros que el usuario elimine después de la migración.
 
 Los datos y favoritos se guardan en `localStorage` **solo en este navegador**. Los cambios no se sincronizan entre personas, dispositivos o barrios. Borrar los datos del navegador los elimina: exportá una copia desde el dashboard. El GPS se conserva solo en memoria y no se exporta ni almacena.
 

@@ -38,6 +38,10 @@ import {
   Wrench,
   Car,
   ShoppingBasket,
+  Flower2,
+  Dumbbell,
+  Pill,
+  PawPrint,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { initialData, dayNames } from "./data";
@@ -57,6 +61,13 @@ import HeroVisual from "./HeroVisual";
 import useExperience from "./useExperience";
 import Modal from "./Modal";
 import Dashboard from "./Dashboard";
+import NeighborhoodPicker from "./NeighborhoodPicker";
+import {
+  prepareData,
+  getNeighborhoods,
+  addNeighborhood,
+  NEIGHBORHOOD_KEY,
+} from "./neighborhoods";
 const BusinessMap = lazy(() => import("./BusinessMap"));
 const categoryIcons: Record<string, LucideIcon> = {
   Panaderías: Croissant,
@@ -64,6 +75,14 @@ const categoryIcons: Record<string, LucideIcon> = {
   "Almacenes y kioscos": ShoppingBasket,
   Moda: Shirt,
   Belleza: Scissors,
+  Barberías: Scissors,
+  Peluquerías: Scissors,
+  "Centros de spa": Flower2,
+  "Estética y uñas": Sparkles,
+  Gimnasios: Dumbbell,
+  Farmacias: Pill,
+  Veterinarias: PawPrint,
+  "Pet shops": PawPrint,
   Ferreterías: Wrench,
   Automotor: Car,
   Supermercados: ShoppingBag,
@@ -76,17 +95,17 @@ type InstallEvent = Event & {
 function readInitial(): { data: AppData; warning: string } {
   try {
     const value = localStorage.getItem(STORAGE_KEY);
-    if (!value) return { data: initialData, warning: "" };
+    if (!value) return { data: prepareData(initialData), warning: "" };
     const parsed: unknown = JSON.parse(value);
-    if (isAppData(parsed)) return { data: parsed, warning: "" };
+    if (isAppData(parsed)) return { data: prepareData(parsed), warning: "" };
     return {
-      data: initialData,
+      data: prepareData(initialData),
       warning:
         "Los datos guardados tienen un formato incompatible. Se muestran ejemplos; no se reemplazó tu copia local.",
     };
   } catch {
     return {
-      data: initialData,
+      data: prepareData(initialData),
       warning:
         "No pudimos leer el almacenamiento local. Podés explorar la app, pero tus cambios podrían no conservarse.",
     };
@@ -124,9 +143,69 @@ export default function App() {
   const resultsRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const { settings, businesses, categories } = data;
+  const neighborhoods = getNeighborhoods(data);
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(() => {
+    try {
+      const saved = localStorage.getItem(NEIGHBORHOOD_KEY);
+      if (saved && getNeighborhoods(initial.data).includes(saved)) return saved;
+    } catch {
+      /* Selection remains usable in this session. */
+    }
+    return initial.data.settings.neighborhood;
+  });
+  const previousHome = useRef(settings.neighborhood);
+  useEffect(() => {
+    if (
+      previousHome.current !== settings.neighborhood ||
+      !getNeighborhoods(data).includes(selectedNeighborhood)
+    ) {
+      previousHome.current = settings.neighborhood;
+      setSelectedNeighborhood(settings.neighborhood);
+    }
+  }, [data, settings.neighborhood, selectedNeighborhood]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(NEIGHBORHOOD_KEY, selectedNeighborhood);
+    } catch {
+      /* No location is inferred or sent. */
+    }
+  }, [selectedNeighborhood]);
+  const neighborhoodBusinesses = useMemo(
+    () => businesses.filter((b) => b.neighborhood === selectedNeighborhood),
+    [businesses, selectedNeighborhood],
+  );
+  const quickCategories = [
+    "Barberías",
+    "Centros de spa",
+    "Peluquerías",
+    "Panaderías",
+    "Gastronomía",
+    "Moda",
+    "Almacenes y kioscos",
+  ].filter((c) => categories.includes(c));
+  const neighborhoodCounts = businesses.reduce<Record<string, number>>(
+    (counts, b) => {
+      const n = b.neighborhood || settings.neighborhood;
+      counts[n] = (counts[n] || 0) + 1;
+      return counts;
+    },
+    Object.create(null) as Record<string, number>,
+  );
+  function chooseNeighborhood(name: string) {
+    setSelectedNeighborhood(name);
+    setSelected(null);
+    setQuery("");
+    setCategory("Todos");
+    setOpenOnly(false);
+  }
+  function createNeighborhood(name: string) {
+    const next = addNeighborhood(data, name);
+    saveData(next);
+    chooseNeighborhood(next.neighborhoods![next.neighborhoods!.length - 1]);
+  }
   const ownerUrl = whatsappUrl(
     settings.ownerWhatsapp,
-    `¡Hola! Quiero saber más sobre ${settings.appName} en ${settings.neighborhood}.`,
+    `¡Hola! Quiero saber más sobre ${settings.appName} en ${selectedNeighborhood}.`,
   );
   const results = useMemo(
     () =>
@@ -136,16 +215,26 @@ export default function App() {
         onlyFavorites: view === "favorites",
         open: openOnly,
         origin,
+        neighborhood: selectedNeighborhood,
       }),
-    [businesses, query, category, view, favorites, openOnly, origin],
+    [
+      businesses,
+      query,
+      category,
+      view,
+      favorites,
+      openOnly,
+      origin,
+      selectedNeighborhood,
+    ],
   );
-  const featured = businesses.filter((b) => b.featured).slice(0, 3);
+  const featured = neighborhoodBusinesses.filter((b) => b.featured).slice(0, 3);
   useEffect(() => {
-    document.title = `${settings.appName} · ${settings.neighborhood}`;
+    document.title = `${settings.appName} · ${selectedNeighborhood}`;
     const el = document.querySelector('link[rel="manifest"]');
     const manifest = {
       id: "/",
-      name: `${settings.appName} · ${settings.neighborhood}`,
+      name: `${settings.appName} · ${selectedNeighborhood}`,
       short_name: settings.appName.slice(0, 24),
       lang: "es-AR",
       start_url: location.origin + "/",
@@ -167,7 +256,7 @@ export default function App() {
     );
     el?.setAttribute("href", url);
     return () => URL.revokeObjectURL(url);
-  }, [settings.appName, settings.neighborhood]);
+  }, [settings.appName, selectedNeighborhood]);
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
@@ -189,7 +278,8 @@ export default function App() {
     const timer = setTimeout(() => setToast(""), 4500);
     return () => clearTimeout(timer);
   }, [toast]);
-  function saveData(next: AppData) {
+  function saveData(value: AppData) {
+    const next = prepareData(value);
     setData(next);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
@@ -460,17 +550,28 @@ export default function App() {
       )}
       {view === "dashboard" ? (
         <main className="container dashboard-main">
-          <Dashboard data={data} onChange={saveData} />
+          <Dashboard
+            data={data}
+            onChange={saveData}
+            defaultNeighborhood={selectedNeighborhood}
+          />
         </main>
       ) : (
         <main>
+          <NeighborhoodPicker
+            neighborhoods={neighborhoods}
+            selected={selectedNeighborhood}
+            counts={neighborhoodCounts}
+            onSelect={chooseNeighborhood}
+            onAdd={createNeighborhood}
+          />
           {view === "explore" ? (
             <section className="hero container">
               <div className="hero-copy">
                 <span className="location-pill">
                   <span className="pulse-dot" />
                   <MapPin size={13} />
-                  {settings.neighborhood}
+                  {selectedNeighborhood}
                   <ChevronDown size={12} />
                 </span>
                 <span className="hero-kicker">
@@ -515,8 +616,8 @@ export default function App() {
                 </div>
               </div>
               <HeroVisual
-                businesses={businesses}
-                neighborhood={settings.neighborhood}
+                businesses={neighborhoodBusinesses}
+                neighborhood={selectedNeighborhood}
                 onSelect={selectBusiness}
               />
               <div className="hero-scroll">
@@ -528,7 +629,7 @@ export default function App() {
                 </button>
                 <span>
                   <strong>
-                    {businesses.length.toString().padStart(2, "0")}
+                    {neighborhoodBusinesses.length.toString().padStart(2, "0")}
                   </strong>{" "}
                   comercios por descubrir <ArrowRight size={17} />
                 </span>
@@ -592,7 +693,7 @@ export default function App() {
                 </span>
                 Todos los rubros
               </button>
-              {categories.slice(0, 7).map((c) => {
+              {quickCategories.map((c) => {
                 const Icon = categoryIcons[c] || Store;
                 return (
                   <button
@@ -657,7 +758,7 @@ export default function App() {
                   {results.length === 1
                     ? "comercio encontrado"
                     : "comercios encontrados"}
-                  {query ? ` para “${query}”` : ` en ${settings.neighborhood}`}
+                  {query ? ` para “${query}”` : ` en ${selectedNeighborhood}`}
                 </p>
               </div>
               <div
@@ -752,6 +853,12 @@ export default function App() {
             {results.length === 0 ? (
               <div className="empty-state">
                 <Search size={35} />
+                {neighborhoodBusinesses.length === 0 && (
+                  <p className="empty-neighborhood">
+                    Todavía no hay comercios cargados en {selectedNeighborhood}.
+                    Podés sumarlos desde el dashboard o elegir otro barrio.
+                  </p>
+                )}
                 <h3>
                   {view === "favorites" &&
                   !query &&
@@ -843,7 +950,7 @@ export default function App() {
           </div>
           <span className="footer-location">
             <MapPin size={13} />
-            {settings.neighborhood} · Argentina
+            {selectedNeighborhood} · Argentina
           </span>
           <button onClick={install}>
             <Download size={15} />
@@ -929,7 +1036,8 @@ export default function App() {
               <div>
                 <strong>Encontranos en</strong>
                 <p>
-                  {selected.address}, {settings.neighborhood}
+                  {selected.address},{" "}
+                  {selected.neighborhood || selectedNeighborhood}
                 </p>
                 {origin && (
                   <small>

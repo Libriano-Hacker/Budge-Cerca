@@ -14,6 +14,7 @@ export type Business = {
   color: string;
   initials: string;
   imageUrl?: string;
+  neighborhood?: string;
 };
 export type Settings = {
   appName: string;
@@ -26,6 +27,8 @@ export type AppData = {
   settings: Settings;
   categories: string[];
   businesses: Business[];
+  neighborhoods?: string[];
+  neighborhoodEdition?: 1;
 };
 export const STORAGE_KEY = "budge-cerca:data:v1";
 export function validPhotoUrl(value: string) {
@@ -110,11 +113,13 @@ export function filterBusinesses(
     onlyFavorites?: boolean;
     open?: boolean;
     origin?: Coordinates | null;
+    neighborhood?: string;
   } = {},
 ) {
   const term = normalize(query);
   const results = businesses.filter(
     (b) =>
+      (!options.neighborhood || b.neighborhood === options.neighborhood) &&
       (!term ||
         normalize(
           `${b.name} ${b.category} ${b.description} ${b.address}`,
@@ -144,6 +149,25 @@ export function isAppData(value: unknown): value is AppData {
   )
     return false;
   const s = value.settings;
+  if (
+    typeof s.neighborhood !== "string" ||
+    !s.neighborhood.trim() ||
+    s.neighborhood.length > 60
+  )
+    return false;
+  if (value.neighborhoods !== undefined) {
+    if (
+      !Array.isArray(value.neighborhoods) ||
+      !value.neighborhoods.length ||
+      !value.neighborhoods.every(
+        (n) => typeof n === "string" && n.trim().length > 0 && n.length <= 60,
+      ) ||
+      new Set(value.neighborhoods.map((n) => normalize(String(n)))).size !==
+        value.neighborhoods.length ||
+      !value.neighborhoods.includes(s.neighborhood)
+    )
+      return false;
+  }
   return (
     ["appName", "neighborhood", "ownerWhatsapp", "intro"].every(
       (k) => typeof s[k] === "string",
@@ -170,6 +194,12 @@ export function isAppData(value: unknown): value is AppData {
         ].every((k) => typeof b[k] === "string") &&
         Boolean(b.id) &&
         Boolean(b.name) &&
+        (b.neighborhood === undefined ||
+          (typeof b.neighborhood === "string" &&
+            b.neighborhood.trim().length > 0 &&
+            b.neighborhood.length <= 60 &&
+            (value.neighborhoods === undefined ||
+              (value.neighborhoods as string[]).includes(b.neighborhood)))) &&
         (b.imageUrl === undefined ||
           (typeof b.imageUrl === "string" &&
             (!b.imageUrl || validPhotoUrl(b.imageUrl)))) &&

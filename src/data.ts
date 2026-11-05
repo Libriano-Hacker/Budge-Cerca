@@ -1,4 +1,9 @@
 import type { AppData, Business, Hours } from "./domain";
+import {
+  APP_NAME,
+  DEFAULT_NEIGHBORHOODS,
+  NEW_CATEGORIES,
+} from "./neighborhoods";
 const normal: Hours[] = [
   { days: [1, 2, 3, 4, 5, 6], opens: "09:00", closes: "20:00" },
 ];
@@ -20,12 +25,15 @@ const create = (
   hours: normal,
   featured: false,
   promotion: "",
+  neighborhood: "Ing.Budge",
   ...b,
 });
 export const initialData: AppData = {
   version: 1,
+  neighborhoodEdition: 1,
+  neighborhoods: DEFAULT_NEIGHBORHOODS,
   settings: {
-    appName: "Budge Cerca",
+    appName: APP_NAME,
     neighborhood: "Ing.Budge",
     ownerWhatsapp: "5491150186306",
     intro:
@@ -43,6 +51,7 @@ export const initialData: AppData = {
     "Servicios",
     "Loterías",
     "Fiambrerías",
+    ...NEW_CATEGORIES,
   ],
   businesses: [
     create({
@@ -101,7 +110,7 @@ export const initialData: AppData = {
     create({
       id: "raices",
       name: "Raíces · Peluquería",
-      category: "Belleza",
+      category: "Peluquerías",
       description:
         "Cortes, color y cuidado para tu pelo. Atención con turno para dedicarte el tiempo que necesitás.",
       address: "Virgilio 640",
@@ -155,6 +164,28 @@ export const initialData: AppData = {
       coordinates: { lat: -34.7166, lng: -58.4524 },
       color: "sage",
       initials: "AC",
+    }),
+    create({
+      id: "corte-urbano",
+      name: "Corte Urbano · Barbería",
+      category: "Barberías",
+      description:
+        "Cortes clásicos y modernos, perfilado de barba y atención con turno. Un espacio para renovar tu estilo en el barrio.",
+      address: "Virgilio 780",
+      coordinates: { lat: -34.7214, lng: -58.4544 },
+      color: "blue",
+      initials: "CU",
+    }),
+    create({
+      id: "calma-spa",
+      name: "Calma · Spa & Bienestar",
+      category: "Centros de spa",
+      description:
+        "Masajes relajantes, tratamientos de bienestar y un momento para vos. Atención con reserva previa.",
+      address: "Quesada 840",
+      coordinates: { lat: -34.7191, lng: -58.4526 },
+      color: "sage",
+      initials: "CS",
     }),
   ],
 };

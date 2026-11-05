@@ -11,6 +11,9 @@ const tiles: Record<string, number> = {
   Supermercados: 3,
   Fiambrerías: 3,
   Belleza: 4,
+  Barberías: 4,
+  Peluquerías: 4,
+  "Estética y uñas": 4,
   Ferreterías: 5,
   Automotor: 7,
   Servicios: 8,
@@ -45,6 +48,13 @@ export default function BusinessPhoto({
         {
           "--photo-x": `${[0, 50, 100][tile % 3]}%`,
           "--photo-y": `${[0, 47, 100][Math.floor(tile / 3)]}%`,
+          ...(business.category === "Centros de spa"
+            ? {
+                backgroundImage: "url('/media/spa.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : {}),
         } as CSSProperties
       }
     >

@@ -21,13 +21,16 @@ import type { AppData, Business, Hours, Settings } from "./domain";
 import { isAppData, normalize, validWhatsapp, validPhotoUrl } from "./domain";
 import { dayNames } from "./data";
 import Modal from "./Modal";
+import { getNeighborhoods } from "./neighborhoods";
 
 export default function Dashboard({
   data,
   onChange,
+  defaultNeighborhood,
 }: {
   data: AppData;
   onChange: (data: AppData) => void;
+  defaultNeighborhood?: string;
 }) {
   const [tab, setTab] = useState<"businesses" | "settings" | "categories">(
     "businesses",
@@ -39,8 +42,13 @@ export default function Dashboard({
   const [search, setSearch] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
-  const filtered = data.businesses.filter((b) =>
-    normalize(`${b.name} ${b.category}`).includes(normalize(search)),
+  const [areaFilter, setAreaFilter] = useState("");
+  const neighborhoods = getNeighborhoods(data);
+  const filtered = data.businesses.filter(
+    (b) =>
+      normalize(`${b.name} ${b.category}`).includes(normalize(search)) &&
+      (!areaFilter ||
+        (b.neighborhood || data.settings.neighborhood) === areaFilter),
   );
   function exportData() {
     const url = URL.createObjectURL(
@@ -48,7 +56,7 @@ export default function Dashboard({
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = `budge-cerca-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `tu-barrio-cerca-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -226,6 +234,19 @@ export default function Dashboard({
                   />
                 </div>
               </div>
+              <label className="admin-area-filter">
+                Barrio
+                <select
+                  aria-label="Filtrar comercios por barrio"
+                  value={areaFilter}
+                  onChange={(e) => setAreaFilter(e.target.value)}
+                >
+                  <option value="">Todos los barrios</option>
+                  {neighborhoods.map((n) => (
+                    <option key={n}>{n}</option>
+                  ))}
+                </select>
+              </label>
               <div className="table-scroll">
                 <table className="business-table">
                   <thead>
@@ -249,7 +270,10 @@ export default function Dashboard({
                             </span>
                             <div>
                               <strong>{b.name}</strong>
-                              <small>{b.address}</small>
+                              <small>
+                                {b.address} ·{" "}
+                                {b.neighborhood || data.settings.neighborhood}
+                              </small>
                             </div>
                           </div>
                         </td>
@@ -320,7 +344,15 @@ export default function Dashboard({
             <SettingsForm
               key={JSON.stringify(data.settings)}
               settings={data.settings}
-              onSave={(settings) => onChange({ ...data, settings })}
+              onSave={(settings) =>
+                onChange({
+                  ...data,
+                  settings,
+                  neighborhoods: [
+                    ...new Set([...neighborhoods, settings.neighborhood]),
+                  ],
+                })
+              }
             />
           )}
           {tab === "categories" && (
@@ -340,7 +372,7 @@ export default function Dashboard({
                   onChange={(e) => setNewCategory(e.target.value)}
                   required
                   maxLength={50}
-                  placeholder="Por ejemplo: Farmacias"
+                  placeholder="Por ejemplo: Jugueterías"
                 />
                 <button className="button button-primary">
                   <Plus size={16} />
@@ -407,6 +439,10 @@ export default function Dashboard({
         >
           <BusinessForm
             categories={data.categories}
+            neighborhoods={neighborhoods}
+            defaultNeighborhood={
+              defaultNeighborhood || data.settings.neighborhood
+            }
             business={editor === "new" ? null : editor}
             onSave={(business) => {
               onChange({
@@ -602,9 +638,9 @@ function SettingsForm({
         Guardar mi barrio
       </button>
       <p className="muted settings-note">
-        Podés cambiar la marca para otro barrio. Esta demo conserva una sola
-        configuración por navegador; la administración de varios barrios
-        requiere un servidor.
+        El nombre del barrio define la selección inicial. Podés sumar otros
+        barrios desde las solapas de la portada y asignar cada comercio a su
+        zona. Los datos siguen guardándose solo en este navegador.
       </p>
     </form>
   );
@@ -612,16 +648,21 @@ function SettingsForm({
 function BusinessForm({
   business,
   categories,
+  neighborhoods,
+  defaultNeighborhood,
   onSave,
   onCancel,
 }: {
   business: Business | null;
   categories: string[];
+  neighborhoods: string[];
+  defaultNeighborhood: string;
   onSave: (business: Business) => void;
   onCancel: () => void;
 }) {
   const [draft, setDraft] = useState({
     name: business?.name || "",
+    neighborhood: business?.neighborhood || defaultNeighborhood,
     description: business?.description || "",
     address: business?.address || "",
     category: business?.category || categories[0] || "",
@@ -689,6 +730,7 @@ function BusinessForm({
       description: draft.description.trim(),
       address: draft.address.trim(),
       category: draft.category,
+      neighborhood: draft.neighborhood,
       whatsapp: draft.whatsapp.trim(),
       promotion: draft.promotion.trim(),
       featured: draft.featured,
@@ -731,6 +773,19 @@ function BusinessForm({
           >
             {categories.map((c) => (
               <option key={c}>{c}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Barrio del comercio *
+          <select
+            required
+            aria-label="Barrio del comercio"
+            value={draft.neighborhood}
+            onChange={(e) => change("neighborhood", e.target.value)}
+          >
+            {neighborhoods.map((n) => (
+              <option key={n}>{n}</option>
             ))}
           </select>
         </label>

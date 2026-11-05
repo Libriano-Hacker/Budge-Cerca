@@ -3730,3 +3730,258 @@ a {
     transform: none;
   }
 }
+
+/* Selección de barrio: una misma marca, un catálogo por zona. */
+.neighborhood-picker {
+  padding-top: 25px;
+  padding-bottom: 12px;
+}
+.neighborhood-picker-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.neighborhood-picker-top > div {
+  margin-right: auto;
+}
+.neighborhood-picker-top .eyebrow {
+  font-size: 9px;
+  margin-bottom: 7px;
+}
+.neighborhood-picker-top p {
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+.neighborhood-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #ffffff24;
+  border-radius: 12px;
+  background: #18202be0;
+  color: var(--lime);
+  position: relative;
+}
+.neighborhood-select select {
+  appearance: none;
+  padding: 14px 26px 14px 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 650;
+  min-width: 175px;
+  max-width: 260px;
+  cursor: pointer;
+  color: #edf3e4;
+}
+.neighborhood-select > svg:last-child {
+  position: absolute;
+  right: 13px;
+  pointer-events: none;
+}
+.neighborhood-select select option {
+  background: #18202b;
+  color: white;
+}
+.neighborhood-tabs {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 19px 2px 9px;
+  scrollbar-width: thin;
+  scrollbar-color: #4d5e38 transparent;
+}
+.neighborhood-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 11px 15px;
+  border: 1px solid #ffffff13;
+  border-radius: 10px;
+  color: #a2b2c1;
+  background: #111923;
+}
+.neighborhood-tabs button > span {
+  font-size: 10px;
+  background: #ffffff09;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.neighborhood-tabs button.active {
+  color: var(--lime);
+  border-color: #d4ff4a55;
+  background: #253016;
+  box-shadow: inset 0 1px 0 #d4ff4a18;
+}
+.neighborhood-tabs button:hover {
+  border-color: #d4ff4a55;
+}
+.neighborhood-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 15px;
+  background: #18212b;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 13px;
+}
+.neighborhood-add-form > label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+  min-width: 200px;
+}
+.neighborhood-add-form input {
+  border: 1px solid #ffffff26;
+  background: #0c141d;
+  border-radius: 9px;
+  padding: 13px;
+  font-size: 16px;
+  width: 100%;
+}
+.neighborhood-add-form > small {
+  flex-basis: 100%;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #a0b3c5;
+}
+.neighborhood-add-form > .form-error {
+  flex-basis: 100%;
+  margin: 0;
+}
+.admin-area-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 30px 23px;
+  font-size: 13px;
+  color: #a0b3c5;
+}
+.admin-area-filter select {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #0c141d;
+  padding: 11px;
+  color: #e7edf3;
+  min-width: 180px;
+  max-width: 100%;
+}
+.neighborhood-picker + .hero {
+  padding-top: 42px;
+}
+.brand {
+  font-size: 24px;
+}
+@media (max-width: 1200px) and (min-width: 951px) {
+  .desktop-nav {
+    gap: 16px;
+  }
+  .brand {
+    font-size: 23px;
+  }
+  .header-inner {
+    gap: 15px;
+  }
+  .header-actions {
+    gap: 12px;
+  }
+}
+@media (max-width: 650px) {
+  .brand {
+    font-size: 22px;
+    letter-spacing: -1.1px;
+  }
+  .brand small {
+    letter-spacing: 1.6px;
+  }
+  .neighborhood-picker {
+    padding-top: 23px;
+    padding-bottom: 5px;
+  }
+  .neighborhood-picker-top {
+    gap: 11px;
+    flex-wrap: wrap;
+  }
+  .neighborhood-picker-top > div {
+    flex: 1 0 100%;
+    margin-bottom: 3px;
+  }
+  .neighborhood-picker-top p {
+    font-size: 21px;
+  }
+  .neighborhood-select {
+    flex: 1;
+    min-width: 0;
+    padding: 0 10px;
+    gap: 7px;
+  }
+  .neighborhood-select select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 13px;
+    padding: 13px 16px 13px 0;
+  }
+  .neighborhood-select > svg {
+    width: 15px;
+  }
+  .neighborhood-picker-top > .button {
+    font-size: 11px;
+    padding: 12px;
+    min-height: 45px;
+    gap: 6px;
+  }
+  .neighborhood-tabs {
+    gap: 7px;
+    padding-top: 15px;
+  }
+  .neighborhood-tabs button {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+  .neighborhood-picker + .hero {
+    padding-top: 26px;
+  }
+  .neighborhood-add-form {
+    padding: 16px;
+  }
+  .neighborhood-add-form > .button {
+    margin-left: auto;
+    font-size: 12px;
+  }
+  .admin-area-filter {
+    padding: 15px 19px 4px;
+    flex-wrap: wrap;
+  }
+  .admin-area-filter select {
+    font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  .brand {
+    font-size: 20px;
+  }
+  .brand-icon {
+    width: 34px;
+  }
+  .brand-icon > span {
+    left: 15px;
+  }
+  .neighborhood-picker-top > .button {
+    font-size: 10px;
+    padding-inline: 9px;
+  }
+  .neighborhood-select select {
+    font-size: 12px;
+  }
+}

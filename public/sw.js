@@ -1,10 +1,15 @@
-const CACHE = "budge-cerca-v3-neighborhoods";
+const CACHE = "budge-cerca-v5-cobalt-downloads";
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE)
       .then((cache) =>
-        cache.addAll(["/", "/icon.svg", "/manifest.webmanifest"]),
+        cache.addAll([
+          "/",
+          "/icon-192.png",
+          "/icon-512.png",
+          "/manifest.webmanifest",
+        ]),
       ),
   );
   self.skipWaiting();

@@ -1,6 +1,8 @@
 # Tu Barrio Cerca
 
-Guía de comercios y servicios con marca **Tu Barrio Cerca**, selección de barrios y punto de partida en **Ing.Budge**. Primer prototipo de una app web instalable (PWA), con buscador público y dashboard de demostración.
+Guía de comercios y servicios con marca **Tu Barrio Cerca**, selección de barrios y punto de partida en **Ing.Budge**. Prototipo web instalable (PWA) y proyectos de usuarios para Android/iPhone con Capacitor. La web incluye un dashboard de demostración; las compilaciones móviles excluyen sus controles.
+
+La propuesta **A · Cobalto urbano** está preparada en la rama `feat/cobalt-mobile-apps`. No se ha publicado en la web ni en las tiendas. [Aplicaciones, APK de pruebas y QR](docs/APLICACIONES.md).
 
 ## Desarrollo
 
@@ -16,11 +18,12 @@ El servidor de desarrollo escucha en `0.0.0.0:3000`. El puerto es fijo: si ya es
 ```bash
 npm test          # Lógica de búsqueda, distancia, horarios, enlaces y copias
 npm run build    # TypeScript + compilación de producción
+npm run build:mobile # Compilación de usuarios sin dashboard (dist-mobile)
 npm run preview  # Sirve dist en el puerto 3000 (detener antes el servidor dev)
 npm run test:e2e # Flujos de navegador en escritorio y celular, sobre dist
 ```
 
-Las pruebas E2E usan Chromium en `/usr/bin/chromium` en este entorno. En otro equipo, indicá su ruta con `PLAYWRIGHT_CHROMIUM_EXECUTABLE` al ejecutar el comando. Ejecutá el build antes de E2E.
+Las pruebas E2E usan Chromium en `/usr/bin/chromium` en este entorno. En otro equipo, indicá su ruta con `PLAYWRIGHT_CHROMIUM_EXECUTABLE` al ejecutar el comando. Ejecutá ambos builds antes de E2E; las pruebas abren vistas previas en los puertos 4173 y 4180.
 
 ## Publicación en Netlify
 
@@ -45,9 +48,11 @@ Para probar el resultado publicado, abrí la URL HTTPS del sitio y comprobá que
 - Dashboard con alta, edición y eliminación de locales y categorías; importación/exportación de copias JSON validadas.
 - Diseño adaptable e instalación desde navegadores compatibles mediante manifiesto y service worker. Se necesita HTTPS para GPS e instalación fuera del entorno local.
 
-El diseño usa fondo grafito, acentos lima y naranja, paneles de vidrio, controles con relieve y tipografía Manrope grande, alojada localmente. La portada incluye un barrio 3D con Three.js que responde al puntero y al scroll, tarjetas flotantes, barra de progreso y aparición de secciones al desplazarse. Se puede pausar la escena; se respeta `prefers-reduced-motion` y hay una alternativa visual si WebGL no está disponible. La animación se detiene fuera de pantalla y cuando la pestaña está oculta.
+La propuesta A usa fondo azul noche, acentos cobalto, paneles de vidrio, controles con relieve y tipografía Manrope grande, alojada localmente. La portada muestra una calle comercial ilustrativa al anochecer, tarjetas flotantes, barra de progreso y aparición de secciones al desplazarse. «Explorar en 3D» activa una escena con Three.js que responde al puntero y al scroll. Se puede pausar; se respeta `prefers-reduced-motion` y hay una alternativa visual si WebGL no está disponible. La animación se detiene fuera de pantalla y cuando la pestaña está oculta.
 
 Las imágenes predeterminadas son ilustrativas, generadas para los comercios de ejemplo; no son fotos reales de esos locales. Están almacenadas en `public/media/comercios-atlas.png` y se muestran por rubro sin depender de servidores de imágenes. El dashboard permite asignar una foto propia mediante un enlace HTTPS directo. Si esa foto no carga, se conserva la imagen ilustrativa. Las copias y datos anteriores siguen siendo compatibles.
+
+La imagen de portada está en `public/media/cobalto-barrio.png`. [Vista de escritorio](docs/diseno/cobalto-escritorio.png), [vista móvil](docs/diseno/cobalto-celular.png) y [página de instalación con QR](docs/diseno/descargas-escritorio.png).
 
 React, TypeScript, Vite, Three.js, Leaflet y Lucide forman la base técnica. El módulo 3D y el mapa se descargan por separado; la interfaz principal permanece disponible mientras se cargan.
 

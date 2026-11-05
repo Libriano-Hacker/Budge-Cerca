@@ -1,0 +1,696 @@
+/* Propuesta A: Cobalto urbano. Solo se publica cuando se apruebe esta versión. */
+:root {
+  background: #071326;
+  --cream: #071326;
+  --panel: #10223b;
+  --lime: #77b8ff;
+  --green: #1677ff;
+  --orange: #5bb6ff;
+  --muted: #a6b8ce;
+  --line: rgba(151, 193, 244, 0.16);
+}
+body {
+  background: #071326;
+}
+.ambient-light {
+  background:
+    radial-gradient(ellipse at 85% 15%, #1677ff1b, transparent 48%),
+    radial-gradient(ellipse at 5% 65%, #0078b718, transparent 50%);
+}
+.scroll-progress {
+  background: linear-gradient(90deg, #1677ff, #75dcff);
+}
+.announcement {
+  background: #07101f;
+}
+.site-header {
+  background: #09182adb;
+  border-color: #b2d8ff19;
+}
+.brand-icon {
+  background: linear-gradient(135deg, #2091ff, #0a4edb);
+  color: white;
+  box-shadow:
+    inset 0 1px 1px #8ecbff,
+    0 5px 25px #1677ff22;
+}
+.brand-icon > span {
+  background: white;
+}
+.button-primary,
+.hero-search button {
+  background: #1677ff;
+  color: white;
+  border-color: #4b9cff;
+  box-shadow:
+    inset 0 1px 0 #ffffff2b,
+    0 7px 24px #0066ff24;
+}
+.button-primary:hover,
+.hero-search button:hover {
+  background: #338bff;
+  color: white;
+  box-shadow: 0 8px 30px #1677ff40;
+}
+.button-secondary {
+  background: linear-gradient(140deg, #203a56, #101f36);
+  border-color: #a3cbef31;
+  color: #e8f3ff;
+}
+.location-pill {
+  background: #1677ff14;
+  border-color: #82bdff45;
+  color: #d5e8ff;
+}
+.pulse-dot,
+.live-dot {
+  background: #3b9aff;
+  box-shadow: 0 0 15px #2994ff80;
+}
+.hero {
+  border-radius: 0 0 26px 26px;
+}
+.hero:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      90deg,
+      #071326f5 0%,
+      #071326e8 34%,
+      #07132672 75%,
+      #07132645
+    ),
+    linear-gradient(0deg, #071326, transparent 65%),
+    url("/media/cobalto-barrio.png");
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+.hero-word {
+  background-image: linear-gradient(120deg, #e1f2ff, #4fafff 62%, #1677ff);
+}
+.hero-kicker {
+  color: #b5cbe0;
+}
+.hero-copy > p {
+  color: #bfd0e2;
+}
+.hero-search {
+  background: linear-gradient(140deg, #16324ebd, #0b1c32d9);
+  border-color: #9fcfff55;
+  box-shadow:
+    0 10px 45px #0004,
+    inset 0 1px 0 #d4ecff11;
+}
+.hero-search input {
+  color: #f1f7ff;
+}
+.hero-search input::placeholder {
+  color: #b3c6da;
+}
+.hero-download-link {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 13px;
+  color: #add4ff;
+  padding: 0;
+  margin-top: 20px;
+  font-weight: 650;
+}
+.hero-download-link:hover {
+  color: white;
+  transform: translateX(3px);
+}
+.hero-visual:before {
+  background: radial-gradient(ellipse, #0062da20, transparent 67%);
+}
+.hero-photo-window {
+  position: absolute;
+  inset: 74px 18px 61px 38px;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, #07132612, #07132636),
+    url("/media/cobalto-barrio.png") 66% center / cover;
+  border: 1px solid #a9d1ff4d;
+  box-shadow:
+    0 30px 70px #0006,
+    inset 0 1px 0 #ffffff24;
+  transform: perspective(1000px) rotateY(-7deg)
+    translateY(calc(var(--scroll-shift, 0px) * -0.16));
+}
+.scene-mode {
+  position: absolute;
+  right: 27px;
+  bottom: 43px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 13px;
+  border-radius: 9px;
+  background: #0c213de0;
+  border: 1px solid #7ab7f738;
+  color: #cce5ff;
+  font-size: 10px;
+  z-index: 5;
+  backdrop-filter: blur(12px);
+}
+.scene-mode:hover {
+  border-color: #78b9ff;
+  color: white;
+}
+.scene-location,
+.floating-shop {
+  background: linear-gradient(130deg, #234565d1, #0c1e35d4);
+  border-color: #b5dfff38;
+}
+.floating-shop:hover {
+  border-color: #56acff;
+  box-shadow:
+    0 25px 50px #0006,
+    0 0 20px #1677ff20;
+}
+.scene-caption strong {
+  color: #d7e9f9;
+}
+.scene-coordinate {
+  color: #98b9d7;
+}
+.neighborhood-marquee {
+  background: #0b1c33;
+  border-color: #78b3f91c;
+}
+.neighborhood-marquee span {
+  color: #99b7d4;
+}
+.category-item {
+  background: linear-gradient(145deg, #1c3450, #0a182c);
+  box-shadow:
+    6px 6px 16px #0005,
+    -3px -3px 12px #4b8ac512,
+    inset 0 1px 0 #b4d7ff11;
+  border-color: #8db5df1a;
+}
+.category-item.selected {
+  background: linear-gradient(145deg, #173f70, #0b254a);
+  border-color: #2487ff88;
+  color: #beddff;
+  box-shadow:
+    inset 2px 2px 8px #0004,
+    0 0 22px #1677ff16;
+}
+.category-item.selected > span {
+  color: #66b5ff;
+}
+.business-card {
+  background: linear-gradient(150deg, #18304abf, #0b1c31e6);
+  border-color: #a9c9f01f;
+}
+.business-card:hover {
+  border-color: #429dff75;
+}
+.featured-card .cover-badge {
+  background: #1677ff;
+  color: white;
+  border-color: #79b7ff;
+}
+.cover-badge {
+  background: #0a1d36b8;
+}
+.favorite-button.active,
+.favorite-button:hover {
+  color: #91c9ff;
+  background: #0d3361e6;
+  border-color: #6bb5ff;
+}
+.card-title > svg,
+.promotion-link,
+.distance,
+.hero-footnote svg {
+  color: #70b7ff;
+}
+.status-dot.open {
+  background: #57dbb2;
+  box-shadow: 0 0 10px #57dbb233;
+}
+.open-status.open {
+  color: #7dd8bd;
+}
+.filter-chip.active {
+  background: #17385e;
+  border-color: #56a8ff88;
+  color: #beddff;
+}
+.select-wrap select,
+.filter-chip {
+  background: #102640;
+  border-color: #91c4f029;
+}
+.view-toggle {
+  background: #071426;
+}
+.view-toggle button.active {
+  background: #214364;
+  color: #e6f3ff;
+}
+.neighborhood-select {
+  background: #102943d6;
+  border-color: #8ebef440;
+}
+.neighborhood-select select option {
+  background: #102943;
+}
+.neighborhood-tabs button {
+  background: #0d213a;
+  border-color: #7fb1e828;
+}
+.neighborhood-tabs button.active {
+  background: #16406e;
+  border-color: #3d9bff90;
+  color: #d1e9ff;
+  box-shadow: inset 0 1px 0 #8dc4ff23;
+}
+.neighborhood-tabs button:hover {
+  border-color: #3d9bff90;
+}
+.neighborhood-add-form {
+  background: #10243b;
+}
+.neighborhood-add-form input {
+  background: #08182a;
+}
+.gps-message {
+  background: #12364e9e;
+  border-color: #4daeff35;
+  color: #bbdef3;
+}
+.join-section:before {
+  background:
+    radial-gradient(ellipse at 10% 30%, #1677ff25, transparent 60%),
+    linear-gradient(135deg, #163453, #0c1d34);
+  border-color: #78adf22b;
+}
+.join-icon {
+  background: linear-gradient(135deg, #20548d, #102a4c);
+  border-color: #70b9ff4a;
+  color: #8cc8ff;
+}
+.join-section .eyebrow {
+  color: #91caff;
+}
+.site-footer {
+  background: #050e1d;
+}
+.footer-brand svg {
+  color: #4cafff;
+}
+.contact-float {
+  background: #1677ff;
+  color: white;
+  border-color: #8acaff;
+  box-shadow:
+    0 8px 30px #0006,
+    inset 0 1px 0 #b8deff;
+}
+.mobile-bottom-nav {
+  background: #0c2340dc;
+  border-color: #a3d2ff3d;
+}
+.mobile-bottom-nav button.active {
+  color: #8ac8ff;
+}
+.mobile-bottom-nav button.active svg {
+  filter: drop-shadow(0 0 7px #1677ff6b);
+}
+.modal,
+.modal-header {
+  background: #10223bf2;
+}
+.detail-promotion {
+  background: #1677ff13;
+  border-color: #2688ff3b;
+}
+.detail-promotion strong,
+.detail-promotion {
+  color: #8cc4ff;
+}
+.detail-promotion p {
+  color: #bbd0e6;
+}
+.admin-panel {
+  background: #10233bd9;
+}
+.stat-grid > div {
+  background: linear-gradient(145deg, #213e5d, #10223c);
+}
+.table-featured.active {
+  background: #1677ff1c;
+  color: #b1d8ff;
+  border-color: #5ca5ff35;
+}
+.table-featured {
+  background: #142d48;
+}
+.admin-tabs button[aria-selected="true"] {
+  color: #8ccaff;
+}
+.business-table th {
+  background: #0b1b31;
+}
+.form-grid input,
+.form-grid textarea,
+.form-grid select,
+.photo-url-field input,
+.admin-search {
+  background: #091a30;
+}
+.schedule-days button.active {
+  background: #174575;
+  border-color: #539ff5;
+  color: #d4eaff;
+}
+.checkbox-label input {
+  accent-color: #1677ff;
+}
+.empty-state {
+  background: #0f2540;
+  border-color: #6aaeff3b;
+}
+.toast {
+  background: #102e49f2;
+  border-color: #5dacf55c;
+  color: #d5ebff;
+}
+.download-center {
+  padding-top: 65px;
+  padding-bottom: 75px;
+}
+.download-center > h1 {
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 1.06;
+  letter-spacing: -0.065em;
+  font-weight: 800;
+  margin-bottom: 26px;
+}
+.download-center > h1 > span {
+  color: #73baff;
+}
+.download-intro {
+  max-width: 700px;
+  color: #b6cbe0;
+  font-size: 18px;
+  line-height: 1.85;
+  margin-bottom: 40px;
+}
+.download-layout {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+.download-options {
+  display: grid;
+  gap: 20px;
+}
+.download-option {
+  display: flex;
+  gap: 20px;
+  padding: 27px;
+  background: linear-gradient(135deg, #193653a3, #0c2139d9);
+  border: 1px solid #95c6ff26;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 #c2e1ff0d;
+}
+.download-option.available {
+  border-color: #54a9ff70;
+}
+.download-option-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
+  background: #1677ff22;
+  color: #7fc2ff;
+  flex-shrink: 0;
+}
+.availability {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: #79c4ff;
+  font-weight: 700;
+}
+.availability.pending {
+  color: #91a9c5;
+}
+.download-option h2 {
+  font-size: 27px;
+  letter-spacing: -0.8px;
+  margin: 10px 0 13px;
+}
+.download-option p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #a3bbd3;
+  margin-bottom: 21px;
+}
+.download-option .button {
+  margin: 0 10px 5px 0;
+  font-size: 13px;
+}
+.store-pending {
+  display: inline-block;
+  font-size: 12px;
+  color: #a3b5ca;
+  background: #09192b;
+  border: 1px solid #ffffff12;
+  padding: 10px 13px;
+  border-radius: 8px;
+}
+.qr-panel {
+  position: sticky;
+  top: 115px;
+  background: linear-gradient(140deg, #193d62c9, #0c1f38e0);
+  border: 1px solid #8dc7ff40;
+  padding: 30px;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 25px 50px #0003;
+}
+.qr-panel h2 {
+  font-size: 32px;
+  letter-spacing: -1.1px;
+}
+.qr-frame {
+  background: white;
+  padding: 18px;
+  border-radius: 18px;
+  max-width: 300px;
+  margin: 27px auto;
+}
+.qr-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.qr-panel > p {
+  font-size: 13px;
+  line-height: 1.85;
+  color: #b2c9e0;
+  margin-bottom: 23px;
+}
+.qr-panel > .button {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.qr-target {
+  display: block;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  color: #a8c8e5;
+  line-height: 1.7;
+  margin-top: 6px;
+}
+.qr-activation {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: #bdc9d5;
+  line-height: 1.8;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #9ec9ed21;
+}
+.installation-steps {
+  padding-top: 75px;
+  scroll-margin-top: 110px;
+}
+.installation-steps > h2 {
+  font-size: clamp(30px, 3vw, 43px);
+  letter-spacing: -1.3px;
+  margin-bottom: 28px;
+}
+.installation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+.installation-grid article {
+  background: #102b47a8;
+  border: 1px solid #6aabed2e;
+  border-radius: 20px;
+  padding: 27px;
+}
+.installation-grid article > span {
+  color: #76baff;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.installation-grid h3 {
+  font-size: 25px;
+  margin: 13px 0;
+  letter-spacing: -0.8px;
+}
+.installation-grid ol {
+  padding-left: 21px;
+  font-size: 14px;
+  line-height: 1.95;
+  color: #bad0e5;
+}
+.installation-grid li {
+  padding: 7px 0;
+}
+.installation-steps > .muted {
+  margin: 26px 0;
+  max-width: 900px;
+}
+@media (max-width: 950px) {
+  .download-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .download-option {
+    padding: 22px;
+    gap: 13px;
+  }
+  .download-option-icon {
+    width: 40px;
+    height: 44px;
+  }
+  .download-option-icon > svg {
+    width: 22px;
+  }
+  .download-option h2 {
+    font-size: 23px;
+  }
+  .qr-panel {
+    padding: 22px;
+  }
+  .qr-panel h2 {
+    font-size: 27px;
+  }
+}
+@media (max-width: 650px) {
+  .hero:before {
+    background-image:
+      linear-gradient(180deg, #07132670, #071326dd 67%, #071326),
+      url("/media/cobalto-barrio.png");
+    background-position: 60% center;
+  }
+  .hero-photo-window {
+    inset: 53px 15px 38px;
+    border-radius: 20px;
+  }
+  .scene-mode {
+    right: 17px;
+    bottom: 24px;
+    padding: 9px 12px;
+    font-size: 9px;
+  }
+  .hero-download-link {
+    font-size: 12px;
+    margin-top: 18px;
+  }
+  .download-center {
+    padding-top: 36px;
+    padding-bottom: 45px;
+  }
+  .download-center > h1 {
+    font-size: 51px;
+    letter-spacing: -2.9px;
+  }
+  .download-intro {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+  .download-layout {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .download-option {
+    padding: 22px;
+    gap: 14px;
+    border-radius: 17px;
+  }
+  .download-option h2 {
+    font-size: 25px;
+  }
+  .download-option p {
+    font-size: 14px;
+  }
+  .download-option .button {
+    font-size: 12px;
+    padding: 14px 16px;
+  }
+  .availability {
+    font-size: 8px;
+  }
+  .qr-panel {
+    position: static;
+    padding: 25px;
+  }
+  .qr-panel h2 {
+    font-size: 30px;
+  }
+  .qr-frame {
+    max-width: 280px;
+  }
+  .qr-panel > p {
+    font-size: 14px;
+  }
+  .qr-target {
+    font-size: 11px;
+  }
+  .installation-steps {
+    padding-top: 43px;
+  }
+  .installation-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .installation-steps > h2 {
+    font-size: 33px;
+  }
+  .installation-grid article {
+    padding: 23px;
+  }
+  .installation-grid ol {
+    font-size: 14px;
+  }
+  .installation-steps > .muted {
+    font-size: 12px;
+  }
+  .native-user-app .site-header {
+    padding-top: env(safe-area-inset-top);
+  }
+  .native-user-app .contact-float {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo-window {
+    transform: none;
+  }
+}

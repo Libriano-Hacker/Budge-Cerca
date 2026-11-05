@@ -7,3 +7,12 @@ dist/
 playwright-report/
 test-results/
 .DS_Store
+dist-mobile/
+artifacts/
+.mobile-tools/
+
+# Firmas privadas y archivos de aprovisionamiento
+*.keystore
+*.jks
+*.p12
+*.mobileprovision

@@ -4,6 +4,7 @@ test("escena 3D permite pausar, abrir un local y revelar secciones al hacer scro
   page,
 }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Explorar en 3D" }).click();
   await expect(page.locator(".hero-scene")).toHaveAttribute(
     "data-renderer",
     "webgl",
@@ -60,6 +61,7 @@ test("sin WebGL y con movimiento reducido la interfaz conserva contenido y búsq
     } as typeof original;
   });
   await page.goto("/");
+  await page.getByRole("button", { name: "Explorar en 3D" }).click();
   await expect(page.locator(".hero-scene")).toHaveAttribute(
     "data-renderer",
     "fallback",

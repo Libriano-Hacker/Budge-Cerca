@@ -4,13 +4,13 @@ Una guía móvil para encontrar comercios, servicios y promociones de un barrio.
 
 ## Diseño
 
-- Fondo grafito con acentos eléctricos lima y naranja, tipografía Manrope grande, transparencias y controles con relieve. Una identidad inmersiva adaptable a otros barrios.
+- Propuesta A · Cobalto urbano: fondo azul noche con acentos azules, fotografía ilustrativa al anochecer, tipografía Manrope grande, transparencias y controles con relieve. Preparada para revisión sin publicar cambios en la web existente.
 - Portada con nombre del barrio, presentación, buscador y acceso a contacto por WhatsApp. En celulares, el contacto queda disponible en un botón flotante.
 - Categorías con íconos; destacados con imágenes ilustrativas realistas por rubro; tarjetas con dirección, estado de atención, promociones y favoritos.
-- Navegación inferior en celular: Explorar, Promos, Favoritos e Instalar. Versión de escritorio para operar cómodamente el dashboard.
+- Navegación inferior en celular: Explorar, Promos, Favoritos y Descargar. Versión de escritorio para operar cómodamente el dashboard demo. Las compilaciones nativas excluyen sus controles.
 - Ficha de cada local con descripción, dirección, WhatsApp, horarios por día, promoción y recorrido desde la ubicación actual.
 - Dashboard con alta, edición y eliminación de negocios, rubros nuevos, selección de destacados, personalización de la marca y enlaces HTTPS a fotos propias.
-- Escena 3D ilustrativa que responde al puntero y al scroll, tarjetas flotantes, transiciones de aparición, barra de progreso y navegación de vidrio. Botón para pausar la escena, respeto de la preferencia de reducir movimiento y alternativa visual sin WebGL.
+- Fotografía de portada con opción «Explorar en 3D». Escena ilustrativa que responde al puntero y al scroll, tarjetas flotantes, transiciones de aparición, barra de progreso y navegación de vidrio. Botón para pausar la escena, respeto de la preferencia de reducir movimiento y alternativa visual sin WebGL.
 
 ## Qué funciona en este prototipo
 
@@ -23,6 +23,8 @@ El mapa usa OpenStreetMap y permite seleccionar marcadores. Requiere conexión c
 Los horarios se evalúan con la hora de Argentina; admiten horarios cortados y franjas que pasan de medianoche. Los feriados deben confirmarse con el local. Las promociones son texto editable: su vencimiento todavía se administra manualmente.
 
 La app incluye manifiesto, íconos y service worker para instalación desde navegadores compatibles. Después de una visita con conexión, conserva la interfaz consultada para uso sin conexión. WhatsApp, mapas y recorridos requieren Internet. Todavía no se distribuye mediante Google Play ni App Store.
+
+Se agregaron proyectos Capacitor para Android e iPhone, un APK Android de pruebas compilado y una página `/descargar` con QR en PNG/SVG. La página y su QR requieren publicación con acceso público antes de usarse. El proyecto iPhone necesita Mac/Xcode para compilar y firmar. [Estado, comandos y límites de las aplicaciones](APLICACIONES.md).
 
 Todos los comercios, direcciones y posiciones iniciales son ejemplos. Las imágenes iniciales fueron generadas para ilustrar rubros y no muestran locales reales. Los números de los comercios quedan vacíos para evitar contactar personas ajenas. El contacto del creador sí usa el número solicitado.
 

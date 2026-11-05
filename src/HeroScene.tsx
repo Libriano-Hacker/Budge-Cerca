@@ -57,8 +57,8 @@ export default function HeroScene({ paused }: { paused: boolean }) {
         const towerLightMaterial = mat(0x53616a, 0.4);
         const windowMaterial = new THREE.MeshBasicMaterial({ color: 0xffba70 });
         const limeMaterial = new THREE.MeshStandardMaterial({
-          color: 0xd4ff4a,
-          emissive: 0x95be2b,
+          color: 0x1677ff,
+          emissive: 0x1656c9,
           emissiveIntensity: 0.5,
           roughness: 0.25,
           metalness: 0.5,

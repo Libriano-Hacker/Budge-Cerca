@@ -12,13 +12,34 @@ export default defineConfig({
       args: ["--no-sandbox"],
     },
   },
-  webServer: {
-    command: "npm run preview -- --port 4173 --strictPort",
-    url: "http://127.0.0.1:4173",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: "npm run preview -- --port 4173 --strictPort",
+      url: "http://127.0.0.1:4173",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command:
+        "npm run preview -- --outDir dist-mobile --port 4180 --strictPort",
+      url: "http://127.0.0.1:4180",
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    {
+      name: "desktop",
+      testIgnore: "**/native-preview.spec.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile",
+      testIgnore: "**/native-preview.spec.ts",
+      use: { ...devices["Pixel 7"] },
+    },
+    {
+      name: "native-preview",
+      testMatch: "**/native-preview.spec.ts",
+      use: { ...devices["Pixel 7"], baseURL: "http://127.0.0.1:4180" },
+    },
   ],
 });

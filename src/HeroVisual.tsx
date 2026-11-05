@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ArrowUpRight, MapPin, Pause, Play, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  MapPin,
+  Pause,
+  Play,
+  Sparkles,
+  Box,
+  Camera,
+} from "lucide-react";
 import type { Business } from "./domain";
 import BusinessPhoto from "./BusinessPhoto";
 import Scene from "./HeroScene";
@@ -14,6 +22,7 @@ export default function HeroVisual({
   onSelect: (business: Business) => void;
 }) {
   const [paused, setPaused] = useState(false);
+  const [scene, setScene] = useState(false);
   const picks = businesses.filter((b) => b.featured).slice(0, 3);
   return (
     <div className={`hero-visual ${paused ? "scene-paused" : ""}`}>
@@ -22,7 +31,23 @@ export default function HeroVisual({
       <span className="scene-coordinate">
         TU COMUNIDAD / TU LUGAR <span>EL BARRIO EN MOVIMIENTO</span>
       </span>
-      <Scene paused={paused} />
+      {scene ? (
+        <Scene paused={paused} />
+      ) : (
+        <div
+          className="hero-photo-window"
+          role="img"
+          aria-label="Escena ilustrativa de comercios del barrio al anochecer"
+        />
+      )}
+      <button
+        className="scene-mode"
+        onClick={() => setScene(!scene)}
+        aria-pressed={scene}
+      >
+        {scene ? <Camera size={14} /> : <Box size={14} />}{" "}
+        {scene ? "Ver fotografía" : "Explorar en 3D"}
+      </button>
       <div className="scene-location">
         <span className="live-dot" />
         <MapPin size={14} />

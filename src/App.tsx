@@ -61,6 +61,13 @@ import HeroVisual from "./HeroVisual";
 import useExperience from "./useExperience";
 import Modal from "./Modal";
 import Dashboard from "./Dashboard";
+import DownloadCenter from "./DownloadCenter";
+import {
+  USER_APP,
+  NATIVE_APP,
+  currentPosition,
+  locationError,
+} from "./platform";
 import NeighborhoodPicker from "./NeighborhoodPicker";
 import {
   prepareData,
@@ -87,7 +94,7 @@ const categoryIcons: Record<string, LucideIcon> = {
   Automotor: Car,
   Supermercados: ShoppingBag,
 };
-type View = "explore" | "promos" | "favorites" | "dashboard";
+type View = "explore" | "promos" | "favorites" | "dashboard" | "download";
 type InstallEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: string }>;
@@ -126,7 +133,11 @@ export default function App() {
   const [initial] = useState(readInitial);
   const [data, setData] = useState(initial.data);
   const [warning, setWarning] = useState(initial.warning);
-  const [view, setView] = useState<View>("explore");
+  const [view, setView] = useState<View>(
+    location.pathname.replace(/\/$/, "") === "/descargar"
+      ? "download"
+      : "explore",
+  );
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
   const [openOnly, setOpenOnly] = useState(false);
@@ -137,7 +148,6 @@ export default function App() {
   const [favorites, setFavorites] = useState<string[]>(loadFavorites);
   const [selected, setSelected] = useState<Business | null>(null);
   const [installEvent, setInstallEvent] = useState<InstallEvent | null>(null);
-  const [installHelp, setInstallHelp] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [toast, setToast] = useState("");
   const resultsRef = useRef<HTMLElement>(null);
@@ -240,8 +250,8 @@ export default function App() {
       start_url: location.origin + "/",
       scope: location.origin + "/",
       display: "standalone",
-      theme_color: "#080b11",
-      background_color: "#080b11",
+      theme_color: "#081426",
+      background_color: "#081426",
       icons: [192, 512].map((size) => ({
         src: `${location.origin}/icon-${size}.png`,
         sizes: `${size}x${size}`,
@@ -303,6 +313,9 @@ export default function App() {
     }
   }
   function changeView(next: View) {
+    if (USER_APP && next === "dashboard") return;
+    if (!NATIVE_APP)
+      history.replaceState(null, "", next === "download" ? "/descargar" : "/");
     setView(next);
     setCategory("Todos");
     setQuery("");
@@ -310,44 +323,66 @@ export default function App() {
     setMobileMenu(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  function locate() {
-    if (!navigator.geolocation) {
-      setGpsMessage(
-        "Este navegador no permite usar GPS. Podés buscar por nombre, rubro o dirección.",
-      );
-      return;
-    }
+  async function locate() {
     setLocating(true);
     setGpsMessage("");
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setOrigin({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-        setLocating(false);
-        setGpsMessage(
-          "Ubicación activada. Ordenamos los comercios por cercanía. Las distancias son en línea recta.",
-        );
-      },
-      (error) => {
-        setLocating(false);
-        setGpsMessage(
-          error.code === 1
-            ? "No se autorizó el GPS. Habilitalo en los permisos del navegador o seguí buscando por dirección."
-            : "No pudimos obtener tu ubicación. Revisá el GPS y volvé a intentar.",
-        );
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
-    );
+    try {
+      const position = await currentPosition();
+      setOrigin(position);
+      setGpsMessage(
+        "Ubicación activada. Ordenamos los comercios por cercanía. Las distancias son en línea recta.",
+      );
+    } catch (error) {
+      setGpsMessage(locationError(error));
+    } finally {
+      setLocating(false);
+    }
   }
   async function install() {
-    if (installEvent) {
-      await installEvent.prompt();
-      await installEvent.userChoice;
-      setInstallEvent(null);
-    } else setInstallHelp(true);
+    changeView("download");
   }
+  async function promptInstall() {
+    if (!installEvent) return;
+    await installEvent.prompt();
+    await installEvent.userChoice;
+    setInstallEvent(null);
+  }
+  useEffect(() => {
+    if (!NATIVE_APP) return;
+    const external = async (e: MouseEvent) => {
+      const a = (e.target as Element)?.closest?.(
+        'a[target="_blank"]',
+      ) as HTMLAnchorElement | null;
+      if (!a || !a.href.startsWith("https://")) return;
+      e.preventDefault();
+      const { Browser } = await import("@capacitor/browser");
+      try {
+        await Browser.open({ url: a.href });
+      } catch {
+        setToast("No pudimos abrir ese enlace. Volvé a intentarlo.");
+      }
+    };
+    document.addEventListener("click", external);
+    return () => document.removeEventListener("click", external);
+  }, []);
+  useEffect(() => {
+    if (!NATIVE_APP) return;
+    let removed = false;
+    const handle = import("@capacitor/app").then(async ({ App: Native }) => {
+      const listener = await Native.addListener("backButton", () => {
+        if (selected) setSelected(null);
+        else if (mobileMenu) setMobileMenu(false);
+        else if (view !== "explore") changeView("explore");
+        else void Native.exitApp();
+      });
+      if (removed) await listener.remove();
+      return listener;
+    });
+    return () => {
+      removed = true;
+      void handle.then((h) => h.remove());
+    };
+  }, [selected, mobileMenu, view]);
   const selectBusiness = useCallback((b: Business) => setSelected(b), []);
   function scrollResults() {
     resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -404,8 +439,12 @@ export default function App() {
             )}
           </span>
           <button
-            className={`favorite-button ${favorites.includes(b.id) ? "active" : ""}`}
-            aria-label={`${favorites.includes(b.id) ? "Quitar" : "Guardar"} ${b.name} en favoritos`}
+            className={`favorite-button ${
+              favorites.includes(b.id) ? "active" : ""
+            }`}
+            aria-label={`${favorites.includes(b.id) ? "Quitar" : "Guardar"} ${
+              b.name
+            } en favoritos`}
             aria-pressed={favorites.includes(b.id)}
             onClick={() => favorite(b.id)}
           >
@@ -501,16 +540,22 @@ export default function App() {
             </button>
           </nav>
           <div className="header-actions">
-            <button
-              className={`dashboard-link ${view === "dashboard" ? "active" : ""}`}
-              onClick={() => changeView("dashboard")}
-            >
-              <Settings2 size={16} />
-              <span>Dashboard demo</span>
-            </button>
-            <span className="header-divider" />
+            {!USER_APP && (
+              <button
+                className={`dashboard-link ${
+                  view === "dashboard" ? "active" : ""
+                }`}
+                onClick={() => changeView("dashboard")}
+              >
+                <Settings2 size={16} />
+                <span>Dashboard demo</span>
+              </button>
+            )}
+            {!USER_APP && <span className="header-divider" />}
             <a
-              className={`button button-primary header-contact ${!ownerUrl ? "disabled" : ""}`}
+              className={`button button-primary header-contact ${
+                !ownerUrl ? "disabled" : ""
+              }`}
               href={ownerUrl || undefined}
               target="_blank"
               rel="noopener noreferrer"
@@ -536,9 +581,11 @@ export default function App() {
             <button onClick={() => changeView("favorites")}>
               Mis favoritos
             </button>
-            <button onClick={() => changeView("dashboard")}>
-              Dashboard demo
-            </button>
+            {!USER_APP && (
+              <button onClick={() => changeView("dashboard")}>
+                Dashboard demo
+              </button>
+            )}
             <button onClick={install}>Instalar aplicación</button>
           </nav>
         )}
@@ -548,7 +595,13 @@ export default function App() {
           {warning}
         </div>
       )}
-      {view === "dashboard" ? (
+      {view === "download" ? (
+        <DownloadCenter
+          canInstall={Boolean(installEvent)}
+          onInstall={promptInstall}
+          onExplore={() => changeView("explore")}
+        />
+      ) : !USER_APP && view === "dashboard" ? (
         <main className="container dashboard-main">
           <Dashboard
             data={data}
@@ -603,6 +656,11 @@ export default function App() {
                     <ArrowRight size={17} />
                   </button>
                 </form>
+                <button className="hero-download-link" onClick={install}>
+                  <Download size={17} />
+                  Llevá el barrio en tu celular
+                  <ArrowRight size={16} />
+                </button>
                 <div className="hero-footnote">
                   <span>
                     <Check size={14} /> Comercios locales
@@ -682,7 +740,9 @@ export default function App() {
             </div>
             <div className="category-list">
               <button
-                className={`category-item ${category === "Todos" ? "selected" : ""}`}
+                className={`category-item ${
+                  category === "Todos" ? "selected" : ""
+                }`}
                 onClick={() => {
                   setCategory("Todos");
                   scrollResults();
@@ -698,7 +758,9 @@ export default function App() {
                 return (
                   <button
                     key={c}
-                    className={`category-item ${category === c ? "selected" : ""}`}
+                    className={`category-item ${
+                      category === c ? "selected" : ""
+                    }`}
                     onClick={() => {
                       setCategory(c);
                       scrollResults();
@@ -963,10 +1025,12 @@ export default function App() {
             Prototipo · Datos de ejemplo y cambios guardados solo en este
             navegador.
           </span>
-          <button onClick={() => changeView("dashboard")}>
-            Administrar demo
-            <ArrowRight size={12} />
-          </button>
+          {!USER_APP && (
+            <button onClick={() => changeView("dashboard")}>
+              Administrar demo
+              <ArrowRight size={12} />
+            </button>
+          )}
         </div>
       </footer>
       <nav className="mobile-bottom-nav" aria-label="Accesos móviles">
@@ -993,7 +1057,7 @@ export default function App() {
         </button>
         <button onClick={install}>
           <Download size={21} />
-          <span>Instalar</span>
+          <span>{NATIVE_APP ? "Compartir" : "Descargar"}</span>
         </button>
       </nav>
       {selected && (
@@ -1017,7 +1081,9 @@ export default function App() {
                     : "Cerrado ahora"}
               </span>
               <button
-                className={`icon-button ${favorites.includes(selected.id) ? "is-favorite" : ""}`}
+                className={`icon-button ${
+                  favorites.includes(selected.id) ? "is-favorite" : ""
+                }`}
                 aria-label="Guardar en favoritos"
                 aria-pressed={favorites.includes(selected.id)}
                 onClick={() => favorite(selected.id)}
@@ -1099,7 +1165,9 @@ export default function App() {
                 Cómo llegar
               </a>
               <a
-                className={`button button-secondary ${!whatsappUrl(selected.whatsapp, "") ? "disabled" : ""}`}
+                className={`button button-secondary ${
+                  !whatsappUrl(selected.whatsapp, "") ? "disabled" : ""
+                }`}
                 href={
                   whatsappUrl(
                     selected.whatsapp,
@@ -1119,48 +1187,6 @@ export default function App() {
               Las imágenes iniciales son ilustrativas. Los recorridos se abren
               en Google Maps.
             </p>
-          </div>
-        </Modal>
-      )}
-      {installHelp && (
-        <Modal
-          title="Tu barrio, siempre a mano"
-          onClose={() => setInstallHelp(false)}
-        >
-          <div className="install-body">
-            <div className="install-icon">
-              <Download size={32} />
-            </div>
-            <p>
-              Instalá {settings.appName} desde tu navegador para abrirla como
-              una app.
-            </p>
-            <ol>
-              <li>
-                <strong>Android:</strong> abrí el menú de Chrome y elegí
-                «Agregar a la pantalla principal» o «Instalar aplicación».
-              </li>
-              <li>
-                <strong>iPhone:</strong> abrí esta página en Safari, tocá
-                Compartir y elegí «Agregar a pantalla de inicio».
-              </li>
-              <li>
-                <strong>Computadora:</strong> usá el ícono de instalación junto
-                a la barra de direcciones, si está disponible.
-              </li>
-            </ol>
-            <p className="muted">
-              La instalación y el GPS requieren HTTPS o un entorno local
-              compatible. Es una app web instalable; todavía no se publicó en
-              las tiendas.
-            </p>
-            <button
-              className="button button-primary"
-              onClick={() => setInstallHelp(false)}
-            >
-              Entendido
-              <Check size={16} />
-            </button>
           </div>
         </Modal>
       )}

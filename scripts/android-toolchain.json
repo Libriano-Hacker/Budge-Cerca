@@ -1,0 +1,20 @@
+{
+  "java": {
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.13_9.tar.gz",
+    "file": "OpenJDK21U-jdk_x64_linux_hotspot_21.0.13_9.tar.gz",
+    "algorithm": "sha256",
+    "checksum": "d7f5d5cf865a2902b70ff549b97586a7d3f234e016f041ab447ea740c7d66d1c"
+  },
+  "sdk": {
+    "url": "https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip",
+    "file": "commandlinetools-linux-16111833_latest.zip",
+    "algorithm": "sha1",
+    "checksum": "e025545c62a8e64c7559119566a569fb1dec5f60"
+  },
+  "packages": [
+    "platform-tools",
+    "platforms;android-36",
+    "build-tools;35.0.0",
+    "build-tools;36.0.0"
+  ]
+}

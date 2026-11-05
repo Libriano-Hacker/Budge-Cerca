@@ -1,0 +1,10 @@
+{
+  "appId": "com.tubarriocerca.app",
+  "appName": "Tu Barrio Cerca",
+  "publicUrl": "https://ubiquitous-moxie-da14db.netlify.app",
+  "distribution": {
+    "googlePlayUrl": null,
+    "appStoreUrl": null,
+    "androidApkUrl": null
+  }
+}

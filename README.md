@@ -1,8 +1,8 @@
 # Tu Barrio Cerca
 
-Guía de comercios y servicios con marca **Tu Barrio Cerca**, selección de barrios y punto de partida en **Ing.Budge**. Prototipo web instalable (PWA) y proyectos de usuarios para Android/iPhone con Capacitor. La web incluye un dashboard de demostración; las compilaciones móviles excluyen sus controles.
+Guía de comercios y servicios con marca **Tu Barrio Cerca** y eslogan **«Conectá con lo que te rodea»**. Prototipo web instalable (PWA) y proyectos de usuarios para Android/iPhone con Capacitor. La web incluye un dashboard de demostración; las compilaciones móviles excluyen sus controles.
 
-La propuesta **A · Cobalto urbano** está preparada en la rama `feat/cobalt-mobile-apps`. No se ha publicado en la web ni en las tiendas. [Aplicaciones, APK de pruebas y QR](docs/APLICACIONES.md).
+La propuesta **A · Cobalto urbano** está implementada junto con los proyectos móviles. La publicación web y la distribución en tiendas se verifican por separado. [Aplicaciones, APK de pruebas y QR](docs/APLICACIONES.md).
 
 ## Desarrollo
 
@@ -37,7 +37,7 @@ Para probar el resultado publicado, abrí la URL HTTPS del sitio y comprobá que
 
 ## Alcance actual
 
-- Selector desplegable y solapas para elegir barrios; opción para agregar nuevos barrios y recordar la selección en este navegador.
+- Un único selector desplegable para elegir el barrio de búsqueda y recordar la selección en este navegador. Las altas y bajas se realizan en Dashboard → Barrios; los barrios con comercios requieren reasignarlos antes de eliminarlos.
 - Cada comercio se asigna a un barrio desde el dashboard. Búsqueda, destacados, promociones y mapa muestran únicamente el barrio seleccionado. Las zonas sin comercios cargados lo indican.
 - Buscador por nombre, rubro o dirección, sin distinguir tildes ni mayúsculas.
 - Rubros ampliados: barberías, centros de spa, peluquerías, estética y uñas, farmacias, veterinarias, pet shops, gimnasios, ópticas, odontología, lavanderías, tecnología, oficios y más.
@@ -60,7 +60,7 @@ React, TypeScript, Vite, Three.js, Leaflet y Lucide forman la base técnica. El 
 
 **Los comercios iniciales son ejemplos.** Sus direcciones y posiciones son ilustrativas, y sus números de WhatsApp no están configurados. El contacto del creador está configurado con el número solicitado.
 
-Las versiones anteriores con la marca Budge Cerca se actualizan automáticamente a Tu Barrio Cerca. Se conservan los comercios, promociones, imágenes, favoritos y marcas personalizadas. Los comercios antiguos se asignan a su barrio original. No se agregan de nuevo negocios o rubros que el usuario elimine después de la migración.
+Las versiones anteriores con la marca original se actualizan automáticamente a Tu Barrio Cerca. Se conservan comercios, promociones, imágenes, favoritos y marcas personalizadas. El nombre geográfico retirado se reemplaza por «Barrio Centro» en los datos de ejemplo y guardados. Los demás barrios personalizados se conservan. No se agregan de nuevo negocios, barrios o rubros que el creador elimine después de la migración. Las claves internas de almacenamiento se mantienen por compatibilidad.
 
 Los datos y favoritos se guardan en `localStorage` **solo en este navegador**. Los cambios no se sincronizan entre personas, dispositivos o barrios. Borrar los datos del navegador los elimina: exportá una copia desde el dashboard. El GPS se conserva solo en memoria y no se exporta ni almacena.
 

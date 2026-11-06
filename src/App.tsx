@@ -72,8 +72,8 @@ import NeighborhoodPicker from "./NeighborhoodPicker";
 import {
   prepareData,
   getNeighborhoods,
-  addNeighborhood,
   NEIGHBORHOOD_KEY,
+  APP_SLOGAN,
 } from "./neighborhoods";
 const BusinessMap = lazy(() => import("./BusinessMap"));
 const categoryIcons: Record<string, LucideIcon> = {
@@ -193,25 +193,12 @@ export default function App() {
     "Moda",
     "Almacenes y kioscos",
   ].filter((c) => categories.includes(c));
-  const neighborhoodCounts = businesses.reduce<Record<string, number>>(
-    (counts, b) => {
-      const n = b.neighborhood || settings.neighborhood;
-      counts[n] = (counts[n] || 0) + 1;
-      return counts;
-    },
-    Object.create(null) as Record<string, number>,
-  );
   function chooseNeighborhood(name: string) {
     setSelectedNeighborhood(name);
     setSelected(null);
     setQuery("");
     setCategory("Todos");
     setOpenOnly(false);
-  }
-  function createNeighborhood(name: string) {
-    const next = addNeighborhood(data, name);
-    saveData(next);
-    chooseNeighborhood(next.neighborhoods![next.neighborhoods!.length - 1]);
   }
   const ownerUrl = whatsappUrl(
     settings.ownerWhatsapp,
@@ -290,9 +277,16 @@ export default function App() {
   }, [toast]);
   function saveData(value: AppData) {
     const next = prepareData(value);
+    const nextNeighborhood =
+      next.settings.neighborhood !== data.settings.neighborhood ||
+      !getNeighborhoods(next).includes(selectedNeighborhood)
+        ? next.settings.neighborhood
+        : selectedNeighborhood;
     setData(next);
+    setSelectedNeighborhood(nextNeighborhood);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      localStorage.setItem(NEIGHBORHOOD_KEY, nextNeighborhood);
       setWarning("");
       setToast("Cambios guardados en este dispositivo");
     } catch {
@@ -515,7 +509,7 @@ export default function App() {
             </span>
             <span>
               {settings.appName}
-              <small>TU BARRIO, A MANO</small>
+              <small>GUÍA DE COMERCIOS</small>
             </span>
           </button>
           <nav className="desktop-nav" aria-label="Navegación principal">
@@ -614,9 +608,7 @@ export default function App() {
           <NeighborhoodPicker
             neighborhoods={neighborhoods}
             selected={selectedNeighborhood}
-            counts={neighborhoodCounts}
             onSelect={chooseNeighborhood}
-            onAdd={createNeighborhood}
           />
           {view === "explore" ? (
             <section className="hero container">
@@ -630,10 +622,10 @@ export default function App() {
                 <span className="hero-kicker">
                   CERCA DE TODO. LEJOS DE LO COMÚN.
                 </span>
-                <h1>
-                  Tu barrio.
+                <h1 aria-label={APP_SLOGAN}>
+                  Conectá con
                   <br />
-                  Todo <span className="hero-word">cerca.</span>
+                  lo que <span className="hero-word">te rodea.</span>
                 </h1>
                 <p>{settings.intro}</p>
                 <form
@@ -726,7 +718,7 @@ export default function App() {
               {[0, 1].map((i) => (
                 <span key={i}>
                   COMPRÁ LOCAL <Sparkles /> DESCUBRÍ MÁS <Sparkles /> CONECTÁ
-                  CON TU BARRIO <Sparkles /> TODO CERCA <Sparkles />{" "}
+                  CON TU BARRIO <Sparkles /> DESCUBRÍ LO LOCAL <Sparkles />{" "}
                 </span>
               ))}
             </div>
@@ -918,7 +910,7 @@ export default function App() {
                 {neighborhoodBusinesses.length === 0 && (
                   <p className="empty-neighborhood">
                     Todavía no hay comercios cargados en {selectedNeighborhood}.
-                    Podés sumarlos desde el dashboard o elegir otro barrio.
+                    Elegí otro barrio o volvé pronto para descubrir novedades.
                   </p>
                 )}
                 <h3>

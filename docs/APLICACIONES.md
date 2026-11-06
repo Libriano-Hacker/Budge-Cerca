@@ -1,6 +1,6 @@
 # Aplicaciones de Tu Barrio Cerca
 
-Propuesta **A · Cobalto urbano**, versión **0.1.0**, preparada en `feat/cobalt-mobile-apps`. Los cambios no se publicaron en Netlify ni se subieron a `main`, respetando la indicación de revisar primero el diseño. Los proyectos nativos usan Capacitor y los mismos componentes del buscador.
+Propuesta **A · Cobalto urbano**, versión **0.1.0**. Los proyectos nativos usan Capacitor y los mismos componentes del buscador. El usuario selecciona su barrio en un único desplegable; las altas y bajas se administran desde Dashboard → Barrios en la web. El eslogan es «Conectá con lo que te rodea». La publicación web y la distribución de binarios nativos son procesos separados.
 
 ## Entregables y estado
 
@@ -30,7 +30,7 @@ npm run test:e2e             # necesita ambos builds y Chromium
 npm run mobile:sync         # recompila usuarios y sincroniza Android + iOS
 ```
 
-Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas de prueba escuchan en 4173 y 4180. Se verificaron 18 pruebas unitarias y 32 de navegador, incluido el paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y la página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
+Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas de prueba escuchan en 4173 y 4180. La cobertura incluye 21 pruebas unitarias y 34 de navegador: altas y bajas de barrios, migración del nombre anterior, paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
 
 Los iconos y pantallas de inicio ya están incluidos en los proyectos. Para regenerarlos desde la imagen `resources/logo.png`:
 
@@ -106,7 +106,7 @@ public/descargas/tu-barrio-cerca-qr.svg
 public/descargas/destino.json
 ```
 
-**El QR todavía no habilita una descarga pública.** La página nueva no está publicada. En la comprobación de este trabajo, el sitio de Netlify respondió HTTP 401 y exigió acceso. Debe habilitarse el acceso público antes de entregar o imprimir el QR. Los archivos del espacio de trabajo tampoco son enlaces de descarga accesibles desde un teléfono.
+**El QR todavía requiere activar el acceso público.** En la comprobación de este trabajo, el sitio de Netlify respondió HTTP 401 y exigió acceso. Deben publicarse los cambios y habilitarse el acceso público antes de entregar o imprimir el QR. Los archivos del espacio de trabajo tampoco son enlaces de descarga accesibles desde un teléfono.
 
 Después de autorizar la publicación:
 
@@ -119,7 +119,7 @@ El mismo QR podrá dirigir a las dos tiendas sin reimprimirse, mientras se conse
 
 ## Verificación y trabajo pendiente
 
-Se ejecutaron el build web y móvil, sincronización Capacitor de ambas plataformas, build Android `assembleDebug`, verificación de firma y metadatos del APK, decodificación del QR, 50 pruebas automatizadas e inspección visual de escritorio/celular sin desbordamiento horizontal. El desarrollo escucha en el puerto 3000.
+Se ejecutaron el build web y móvil, sincronización Capacitor de ambas plataformas, build Android `assembleDebug`, verificación de firma y metadatos del APK, decodificación del QR e inspección visual de escritorio/celular sin desbordamiento horizontal. El desarrollo escucha en el puerto 3000. La suite de validación incluye 55 pruebas automatizadas.
 
 Falta probar el APK en un Android real, compilar y probar en iPhone/Mac, conectar el catálogo compartido con permisos administrativos, cargar comercios reales y completar firma/publicación. Los permisos GPS nativos, los enlaces externos y el comportamiento de los bordes de pantalla deben comprobarse en teléfonos. No se afirma aprobación de tiendas ni publicación realizada.
 

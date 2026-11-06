@@ -1,10 +1,10 @@
 # Tu Barrio Cerca: primera propuesta
 
-Una guía móvil para encontrar comercios, servicios y promociones de un barrio. Marca inicial: **Tu Barrio Cerca**, barrio **Ing.Budge**. El nombre de la aplicación y el barrio inicial son editables desde el dashboard. La portada permite elegir barrios en un desplegable o en solapas, y agregar barrios propios. Cada local se asigna a su zona. El WhatsApp del creador se configuró con el número indicado, interpretado como celular argentino con código internacional.
+Una guía móvil para encontrar comercios, servicios y promociones de un barrio. Marca: **Tu Barrio Cerca**. Eslogan: **«Conectá con lo que te rodea»**. La portada tiene un único desplegable para seleccionar el barrio de búsqueda. Los barrios se agregan y eliminan únicamente desde Dashboard → Barrios; el barrio inicial se elige en «Mi barrio». Cada local se asigna a su zona. El WhatsApp del creador se configuró con el número indicado, interpretado como celular argentino con código internacional.
 
 ## Diseño
 
-- Propuesta A · Cobalto urbano: fondo azul noche con acentos azules, fotografía ilustrativa al anochecer, tipografía Manrope grande, transparencias y controles con relieve. Preparada para revisión sin publicar cambios en la web existente.
+- Propuesta A · Cobalto urbano: fondo azul noche con acentos azules, fotografía ilustrativa al anochecer, tipografía Manrope grande, transparencias y controles con relieve.
 - Portada con nombre del barrio, presentación, buscador y acceso a contacto por WhatsApp. En celulares, el contacto queda disponible en un botón flotante.
 - Categorías con íconos; destacados con imágenes ilustrativas realistas por rubro; tarjetas con dirección, estado de atención, promociones y favoritos.
 - Navegación inferior en celular: Explorar, Promos, Favoritos y Descargar. Versión de escritorio para operar cómodamente el dashboard demo. Las compilaciones nativas excluyen sus controles.
@@ -42,4 +42,4 @@ Conectar una base de datos y API con control de acceso del lado del servidor. Ag
 
 Cargar locales reales con autorización, coordenadas verificadas y sus números de contacto. Definir condiciones de promociones, términos y política de privacidad. Publicar mediante HTTPS para habilitar GPS e instalación; validar en dispositivos Android/iOS reales. Si se requiere distribución por tiendas, preparar y probar el empaquetado y la publicación correspondientes.
 
-Los catálogos se filtran por el barrio elegido. Los barrios agregados, comercios y selección se guardan en este navegador. Esto permite probar varias zonas; las cuentas, permisos y datos compartidos entre personas requieren todavía un servidor.
+Los catálogos se filtran por el barrio elegido. Los barrios administrados, comercios y selección se guardan en este navegador. Un barrio con locales no puede eliminarse hasta reasignarlos y siempre se conserva al menos uno. El nombre geográfico anterior se retira también de los datos guardados sin perder comercios ni favoritos. Esto permite probar varias zonas; las cuentas, permisos y datos compartidos entre personas requieren todavía un servidor.

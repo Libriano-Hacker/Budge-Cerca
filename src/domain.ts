@@ -28,7 +28,7 @@ export type AppData = {
   categories: string[];
   businesses: Business[];
   neighborhoods?: string[];
-  neighborhoodEdition?: 1;
+  neighborhoodEdition?: 1 | 2;
 };
 export const STORAGE_KEY = "budge-cerca:data:v1";
 export function validPhotoUrl(value: string) {

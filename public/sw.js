@@ -1,4 +1,4 @@
-const CACHE = "budge-cerca-v5-cobalt-downloads";
+const CACHE = "budge-cerca-v6-neighborhood-selector";
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches

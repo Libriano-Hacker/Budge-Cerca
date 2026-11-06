@@ -20,7 +20,7 @@ test("búsqueda, ficha, promoción, favoritos y contacto del creador", async ({
   page,
 }) => {
   await expect(
-    page.getByRole("heading", { name: /Tu barrio\. Todo cerca\./ }),
+    page.getByRole("heading", { name: "Conectá con lo que te rodea." }),
   ).toBeVisible();
   const contact = page.locator(".header-contact");
   await expect(contact).toHaveAttribute(
@@ -118,10 +118,15 @@ test("dashboard cambia marca, agrega rubro y comercio, conserva y elimina datos"
   page,
 }) => {
   await admin(page);
+  await page.getByRole("tab", { name: "Barrios", exact: true }).click();
+  await page.getByLabel("Nombre del nuevo barrio").fill("Villa Prueba");
+  await page
+    .getByRole("button", { name: "Agregar barrio", exact: true })
+    .click();
   await page.getByRole("tab", { name: "Mi barrio" }).click();
   await page
-    .getByLabel("Nombre del barrio", { exact: true })
-    .fill("Villa Prueba");
+    .getByLabel("Barrio inicial", { exact: true })
+    .selectOption("Villa Prueba");
   await page
     .getByLabel("Nombre de la aplicación", { exact: true })
     .fill("Mi Barrio Cerca");

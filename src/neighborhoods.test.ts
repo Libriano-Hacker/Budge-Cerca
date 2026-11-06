@@ -6,6 +6,8 @@ import {
   APP_NAME,
   NEW_CATEGORIES,
   prepareData,
+  removeNeighborhood,
+  DEFAULT_NEIGHBORHOOD,
 } from "./neighborhoods";
 
 describe("Barrios y actualización de datos guardados", () => {
@@ -88,9 +90,68 @@ describe("Barrios y actualización de datos guardados", () => {
       filterBusinesses([bakery], "", "Todos", { neighborhood: "Banfield" }),
     ).toEqual([]);
   });
+  it("retira el nombre anterior sin perder comercios ni duplicar el barrio de destino", () => {
+    for (const name of ["Ing.Budge", "Ing. Budge", "Ingeniero Budge"]) {
+      const legacy = {
+        ...initialData,
+        neighborhoodEdition: 1 as const,
+        neighborhoods: [name, DEFAULT_NEIGHBORHOOD, "Banfield"],
+        settings: { ...initialData.settings, neighborhood: name },
+        businesses: initialData.businesses.map((business) => ({
+          ...business,
+          neighborhood: name,
+        })),
+      };
+      const updated = prepareData(legacy);
+      expect(updated.settings.neighborhood).toBe(DEFAULT_NEIGHBORHOOD);
+      expect(updated.neighborhoods).toEqual([DEFAULT_NEIGHBORHOOD, "Banfield"]);
+      expect(updated.businesses).toEqual(initialData.businesses);
+      expect(prepareData(updated)).toEqual(updated);
+      expect(isAppData(updated)).toBe(true);
+    }
+  });
+  it("elimina un barrio vacío y no lo vuelve a agregar al recargar", () => {
+    const updated = removeNeighborhood(initialData, "Banfield");
+    expect(updated.neighborhoods).not.toContain("Banfield");
+    expect(updated.businesses).toEqual(initialData.businesses);
+    expect(prepareData(updated)).toEqual(updated);
+    const newHome = removeNeighborhood(
+      {
+        ...initialData,
+        settings: { ...initialData.settings, neighborhood: "Banfield" },
+      },
+      "Banfield",
+    );
+    expect(newHome.settings.neighborhood).toBe(DEFAULT_NEIGHBORHOOD);
+    expect(isAppData(newHome)).toBe(true);
+  });
+  it("conserva los barrios con comercios y al menos un barrio disponible", () => {
+    expect(() => removeNeighborhood(initialData, DEFAULT_NEIGHBORHOOD)).toThrow(
+      /Reasigná/,
+    );
+    expect(() =>
+      removeNeighborhood(
+        {
+          ...initialData,
+          neighborhoods: [DEFAULT_NEIGHBORHOOD],
+          businesses: [],
+        },
+        DEFAULT_NEIGHBORHOOD,
+      ),
+    ).toThrow(/al menos un barrio/);
+    expect(() => removeNeighborhood(initialData, "No existe")).toThrow(
+      /no está disponible/,
+    );
+  });
   it("rechaza copias con barrios duplicados o referencias que no pertenecen al catálogo", () => {
     expect(
-      isAppData({ ...initialData, neighborhoods: ["Ing.Budge", "ING.BUDGE"] }),
+      isAppData({
+        ...initialData,
+        neighborhoods: [
+          DEFAULT_NEIGHBORHOOD,
+          DEFAULT_NEIGHBORHOOD.toUpperCase(),
+        ],
+      }),
     ).toBe(false);
     expect(isAppData({ ...initialData, neighborhoods: ["Banfield"] })).toBe(
       false,

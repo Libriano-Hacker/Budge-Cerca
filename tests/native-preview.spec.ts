@@ -5,6 +5,16 @@ test("la compilación de usuarios excluye el dashboard y permite buscar y guarda
 }) => {
   await page.goto("/");
   await expect(
+    page.getByRole("button", { name: "Agregar barrio", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "Barrios disponibles" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("¿En qué barrio estás?", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText(/Ing\.?\s*Budge/i);
+  await expect(
     page.getByRole("button", { name: "Dashboard demo", exact: true }),
   ).toHaveCount(0);
   await expect(
@@ -53,6 +63,10 @@ test("el paquete de usuarios muestra instrucciones de instalación sin inventar 
   await expect(
     page.getByRole("link", { name: "Abrir Google Play" }),
   ).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Desde Safari" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Desde Chrome" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Desde Safari" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Desde Chrome" }),
+  ).toBeVisible();
 });

@@ -1,6 +1,7 @@
 import type { AppData, Business, Hours } from "./domain";
 import {
   APP_NAME,
+  DEFAULT_NEIGHBORHOOD,
   DEFAULT_NEIGHBORHOODS,
   NEW_CATEGORIES,
 } from "./neighborhoods";
@@ -25,16 +26,16 @@ const create = (
   hours: normal,
   featured: false,
   promotion: "",
-  neighborhood: "Ing.Budge",
+  neighborhood: DEFAULT_NEIGHBORHOOD,
   ...b,
 });
 export const initialData: AppData = {
   version: 1,
-  neighborhoodEdition: 1,
+  neighborhoodEdition: 2,
   neighborhoods: DEFAULT_NEIGHBORHOODS,
   settings: {
     appName: APP_NAME,
-    neighborhood: "Ing.Budge",
+    neighborhood: DEFAULT_NEIGHBORHOOD,
     ownerWhatsapp: "5491150186306",
     intro:
       "Los comercios de siempre. Nuevos lugares por descubrir. Encontrá lo que necesitás y apoyá a quienes hacen tu barrio.",

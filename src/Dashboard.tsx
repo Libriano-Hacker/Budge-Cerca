@@ -21,7 +21,11 @@ import type { AppData, Business, Hours, Settings } from "./domain";
 import { isAppData, normalize, validWhatsapp, validPhotoUrl } from "./domain";
 import { dayNames } from "./data";
 import Modal from "./Modal";
-import { getNeighborhoods } from "./neighborhoods";
+import {
+  addNeighborhood,
+  getNeighborhoods,
+  removeNeighborhood,
+} from "./neighborhoods";
 
 export default function Dashboard({
   data,
@@ -32,15 +36,16 @@ export default function Dashboard({
   onChange: (data: AppData) => void;
   defaultNeighborhood?: string;
 }) {
-  const [tab, setTab] = useState<"businesses" | "settings" | "categories">(
-    "businesses",
-  );
+  const [tab, setTab] = useState<
+    "businesses" | "settings" | "categories" | "neighborhoods"
+  >("businesses");
   const [editor, setEditor] = useState<Business | "new" | null>(null);
   const [removing, setRemoving] = useState<Business | null>(null);
   const [imported, setImported] = useState<AppData | null>(null);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [newCategory, setNewCategory] = useState("");
+  const [newNeighborhood, setNewNeighborhood] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [areaFilter, setAreaFilter] = useState("");
   const neighborhoods = getNeighborhoods(data);
@@ -100,6 +105,29 @@ export default function Dashboard({
     }
     onChange({ ...data, categories: [...data.categories, value] });
     setNewCategory("");
+  }
+  function createNeighborhood(e: FormEvent) {
+    e.preventDefault();
+    setError("");
+    try {
+      onChange(addNeighborhood(data, newNeighborhood));
+      setNewNeighborhood("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "No pudimos agregar ese barrio.",
+      );
+    }
+  }
+  function deleteNeighborhood(name: string) {
+    setError("");
+    try {
+      onChange(removeNeighborhood(data, name));
+      if (areaFilter === name) setAreaFilter("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "No pudimos eliminar ese barrio.",
+      );
+    }
   }
   return (
     <>
@@ -176,6 +204,7 @@ export default function Dashboard({
             [
               ["businesses", "Comercios"],
               ["settings", "Mi barrio"],
+              ["neighborhoods", "Barrios"],
               ["categories", "Rubros"],
             ] as const
           ).map(([key, label]) => (
@@ -344,16 +373,82 @@ export default function Dashboard({
             <SettingsForm
               key={JSON.stringify(data.settings)}
               settings={data.settings}
+              neighborhoods={neighborhoods}
               onSave={(settings) =>
                 onChange({
                   ...data,
                   settings,
-                  neighborhoods: [
-                    ...new Set([...neighborhoods, settings.neighborhood]),
-                  ],
                 })
               }
             />
+          )}
+          {tab === "neighborhoods" && (
+            <div className="categories-admin neighborhoods-admin">
+              <h2>Administrá los barrios disponibles</h2>
+              <p>
+                Agregá o quitá barrios del selector. Los vecinos solo eligen
+                dónde buscar.
+              </p>
+              <form onSubmit={createNeighborhood} className="add-category-form">
+                <label className="sr-only" htmlFor="new-neighborhood">
+                  Nombre del nuevo barrio
+                </label>
+                <input
+                  id="new-neighborhood"
+                  value={newNeighborhood}
+                  onChange={(e) => setNewNeighborhood(e.target.value)}
+                  required
+                  maxLength={60}
+                  placeholder="Por ejemplo: Villa Centenario"
+                />
+                <button className="button button-primary" type="submit">
+                  <Plus size={16} /> Agregar barrio
+                </button>
+              </form>
+              <div className="admin-category-list">
+                {neighborhoods.map((name) => {
+                  const count = data.businesses.filter(
+                    (business) =>
+                      (business.neighborhood || data.settings.neighborhood) ===
+                      name,
+                  ).length;
+                  const reason =
+                    neighborhoods.length === 1
+                      ? "Debe quedar al menos un barrio disponible"
+                      : count > 0
+                        ? "Reasigná sus comercios antes de eliminar el barrio"
+                        : "Eliminar barrio";
+                  return (
+                    <div key={name}>
+                      <span>
+                        <Store size={16} />
+                        {name}
+                        <small>
+                          {count} {count === 1 ? "comercio" : "comercios"}
+                          {name === data.settings.neighborhood
+                            ? " · Inicial"
+                            : ""}
+                        </small>
+                      </span>
+                      <button
+                        className="icon-button delete-button"
+                        type="button"
+                        disabled={count > 0 || neighborhoods.length === 1}
+                        title={reason}
+                        aria-label={`Eliminar barrio ${name}`}
+                        onClick={() => deleteNeighborhood(name)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="muted">
+                Para eliminar un barrio con comercios, reasignalos primero desde
+                «Comercios». Siempre debe quedar un barrio disponible.
+              </p>
+            </div>
           )}
           {tab === "categories" && (
             <div className="categories-admin">
@@ -543,9 +638,11 @@ function ShieldNote() {
 }
 function SettingsForm({
   settings,
+  neighborhoods,
   onSave,
 }: {
   settings: Settings;
+  neighborhoods: string[];
   onSave: (settings: Settings) => void;
 }) {
   const [draft, setDraft] = useState(settings);
@@ -595,13 +692,17 @@ function SettingsForm({
           />
         </label>
         <label>
-          Nombre del barrio
-          <input
+          Barrio inicial
+          <select
+            aria-label="Barrio inicial"
             required
-            maxLength={60}
             value={draft.neighborhood}
             onChange={(e) => change("neighborhood", e.target.value)}
-          />
+          >
+            {neighborhoods.map((name) => (
+              <option key={name}>{name}</option>
+            ))}
+          </select>
         </label>
         <label className="full-width">
           Tu WhatsApp de contacto
@@ -638,9 +739,9 @@ function SettingsForm({
         Guardar mi barrio
       </button>
       <p className="muted settings-note">
-        El nombre del barrio define la selección inicial. Podés sumar otros
-        barrios desde las solapas de la portada y asignar cada comercio a su
-        zona. Los datos siguen guardándose solo en este navegador.
+        El barrio inicial se elige entre los disponibles. Administrá la lista
+        desde «Barrios» y asigná cada comercio a su zona. Los datos siguen
+        guardándose solo en este navegador.
       </p>
     </form>
   );

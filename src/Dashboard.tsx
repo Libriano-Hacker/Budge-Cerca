@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { AppData, Business, Hours, Settings } from "./domain";
 import { isAppData, normalize, validWhatsapp, validPhotoUrl } from "./domain";
+import { DATA_LIMITS } from "./securityValidation";
 import { dayNames } from "./data";
 import Modal from "./Modal";
 import {
@@ -70,9 +71,12 @@ export default function Dashboard({
     if (!file) return;
     setError("");
     try {
-      if (file.size > 2_000_000)
+      if (file.size > DATA_LIMITS.backupBytes)
         throw new Error("El archivo debe pesar menos de 2 MB.");
-      const value: unknown = JSON.parse(await file.text());
+      const text = await file.text();
+      if (text.length > DATA_LIMITS.serializedChars)
+        throw new Error("El archivo excede el tamaño permitido.");
+      const value: unknown = JSON.parse(text);
       if (!isAppData(value))
         throw new Error(
           "El archivo no es una copia válida de esta app. Revisá su formato, rubros, horarios y coordenadas.",
@@ -841,7 +845,7 @@ function BusinessForm({
       initials: draft.name
         .trim()
         .split(/\s+/)
-        .map((w) => w[0])
+        .map((w) => Array.from(w)[0])
         .slice(0, 2)
         .join("")
         .toUpperCase(),

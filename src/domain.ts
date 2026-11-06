@@ -1,3 +1,12 @@
+import {
+  boundedArray,
+  boundedText,
+  DATA_LIMITS,
+  publicHttpsUrl,
+  recordWithKeys,
+  wellFormedUnicode,
+} from "./securityValidation";
+
 export type Coordinates = { lat: number; lng: number };
 export type Hours = { days: number[]; opens: string; closes: string };
 export type Business = {
@@ -32,12 +41,7 @@ export type AppData = {
 };
 export const STORAGE_KEY = "budge-cerca:data:v1";
 export function validPhotoUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && !url.username && !url.password;
-  } catch {
-    return false;
-  }
+  return publicHttpsUrl(value);
 }
 export const normalize = (value: string) =>
   value
@@ -48,11 +52,16 @@ export const normalize = (value: string) =>
 export const phoneDigits = (value: string) => value.replace(/\D/g, "");
 export function validWhatsapp(value: string) {
   return (
-    /^\+?[\d\s()-]+$/.test(value) && /^[1-9]\d{7,14}$/.test(phoneDigits(value))
+    boundedText(value, 1, 25) &&
+    /^\+?[\d\s()-]+$/.test(value) &&
+    /^[1-9]\d{7,14}$/.test(phoneDigits(value))
   );
 }
 export function whatsappUrl(value: string, message: string) {
-  return validWhatsapp(value)
+  return validWhatsapp(value) &&
+    typeof message === "string" &&
+    message.length <= 2000 &&
+    wellFormedUnicode(message)
     ? `https://wa.me/${phoneDigits(value)}?text=${encodeURIComponent(message)}`
     : null;
 }
@@ -137,50 +146,69 @@ export function filterBusinesses(
       )
     : results;
 }
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null;
+const validPhone = (value: unknown) =>
+  boundedText(value, 0, 25) && (!value.trim() || validWhatsapp(value));
+const colors = new Set(["sand", "sage", "rose", "blue", "lilac", "peach"]);
+const clock = /^([01]\d|2[0-3]):[0-5]\d$/;
+
 export function isAppData(value: unknown): value is AppData {
   if (
-    !isObject(value) ||
+    !recordWithKeys(
+      value,
+      ["version", "settings", "categories", "businesses"],
+      ["neighborhoods", "neighborhoodEdition"],
+    ) ||
     value.version !== 1 ||
-    !isObject(value.settings) ||
-    !Array.isArray(value.categories) ||
-    !Array.isArray(value.businesses)
+    (value.neighborhoodEdition !== undefined &&
+      value.neighborhoodEdition !== 1 &&
+      value.neighborhoodEdition !== 2) ||
+    !recordWithKeys(value.settings, [
+      "appName",
+      "neighborhood",
+      "ownerWhatsapp",
+      "intro",
+    ]) ||
+    !boundedArray(value.categories, DATA_LIMITS.categories) ||
+    !boundedArray(value.businesses, DATA_LIMITS.businesses)
   )
     return false;
-  const s = value.settings;
+
+  const settings = value.settings;
   if (
-    typeof s.neighborhood !== "string" ||
-    !s.neighborhood.trim() ||
-    s.neighborhood.length > 60
+    !boundedText(settings.appName, 1, 35) ||
+    !boundedText(settings.neighborhood, 1, 60) ||
+    !validPhone(settings.ownerWhatsapp) ||
+    !boundedText(settings.intro, 1, 260, true)
   )
     return false;
-  if (value.neighborhoods !== undefined) {
+
+  const categories = value.categories;
+  if (
+    !categories.every(
+      (category) =>
+        boundedText(category, 1, 50) && normalize(category) !== "todos",
+    ) ||
+    new Set(categories.map((category) => normalize(category as string)))
+      .size !== categories.length
+  )
+    return false;
+
+  if (
+    value.neighborhoods !== undefined &&
+    (!boundedArray(value.neighborhoods, DATA_LIMITS.neighborhoods, 1) ||
+      !value.neighborhoods.every((name) => boundedText(name, 1, 60)) ||
+      new Set(value.neighborhoods.map((name) => normalize(name as string)))
+        .size !== value.neighborhoods.length ||
+      !value.neighborhoods.includes(settings.neighborhood))
+  )
+    return false;
+
+  const ids = new Set<string>();
+  const inferredNeighborhoods = new Set([normalize(settings.neighborhood)]);
+  return value.businesses.every((business) => {
     if (
-      !Array.isArray(value.neighborhoods) ||
-      !value.neighborhoods.length ||
-      !value.neighborhoods.every(
-        (n) => typeof n === "string" && n.trim().length > 0 && n.length <= 60,
-      ) ||
-      new Set(value.neighborhoods.map((n) => normalize(String(n)))).size !==
-        value.neighborhoods.length ||
-      !value.neighborhoods.includes(s.neighborhood)
-    )
-      return false;
-  }
-  return (
-    ["appName", "neighborhood", "ownerWhatsapp", "intro"].every(
-      (k) => typeof s[k] === "string",
-    ) &&
-    value.categories.every(
-      (c) => typeof c === "string" && c.trim().length > 0 && c !== "Todos",
-    ) &&
-    new Set(value.categories).size === value.categories.length &&
-    new Set(value.businesses.map((b) => (isObject(b) ? b.id : null))).size ===
-      value.businesses.length &&
-    value.businesses.every(
-      (b) =>
-        isObject(b) &&
+      !recordWithKeys(
+        business,
         [
           "id",
           "name",
@@ -191,40 +219,68 @@ export function isAppData(value: unknown): value is AppData {
           "promotion",
           "color",
           "initials",
-        ].every((k) => typeof b[k] === "string") &&
-        Boolean(b.id) &&
-        Boolean(b.name) &&
-        (b.neighborhood === undefined ||
-          (typeof b.neighborhood === "string" &&
-            b.neighborhood.trim().length > 0 &&
-            b.neighborhood.length <= 60 &&
-            (value.neighborhoods === undefined ||
-              (value.neighborhoods as string[]).includes(b.neighborhood)))) &&
-        (b.imageUrl === undefined ||
-          (typeof b.imageUrl === "string" &&
-            (!b.imageUrl || validPhotoUrl(b.imageUrl)))) &&
-        (value.categories as unknown[]).includes(b.category) &&
-        typeof b.featured === "boolean" &&
-        isObject(b.coordinates) &&
-        typeof b.coordinates.lat === "number" &&
-        Number.isFinite(b.coordinates.lat) &&
-        Math.abs(b.coordinates.lat) <= 90 &&
-        typeof b.coordinates.lng === "number" &&
-        Number.isFinite(b.coordinates.lng) &&
-        Math.abs(b.coordinates.lng) <= 180 &&
-        Array.isArray(b.hours) &&
-        b.hours.every(
-          (h) =>
-            isObject(h) &&
-            Array.isArray(h.days) &&
-            h.days.length > 0 &&
-            h.days.every((d) => Number.isInteger(d) && d >= 0 && d <= 6) &&
-            typeof h.opens === "string" &&
-            /^([01]\d|2[0-3]):[0-5]\d$/.test(h.opens) &&
-            typeof h.closes === "string" &&
-            /^([01]\d|2[0-3]):[0-5]\d$/.test(h.closes) &&
-            h.opens !== h.closes,
-        ),
+          "featured",
+          "coordinates",
+          "hours",
+        ],
+        ["imageUrl", "neighborhood"],
+      ) ||
+      !boundedText(business.id, 1, DATA_LIMITS.businessId) ||
+      !/^[a-zA-Z0-9][a-zA-Z0-9._:-]*$/.test(business.id) ||
+      ids.has(business.id) ||
+      !boundedText(business.name, 1, 70) ||
+      !boundedText(business.category, 1, 50) ||
+      !categories.includes(business.category) ||
+      !boundedText(business.description, 1, 450, true) ||
+      !boundedText(business.address, 1, 120) ||
+      !validPhone(business.whatsapp) ||
+      !boundedText(business.promotion, 0, 300, true) ||
+      !boundedText(business.color, 1, 16) ||
+      !colors.has(business.color) ||
+      !boundedText(business.initials, 0, 8) ||
+      typeof business.featured !== "boolean" ||
+      (business.neighborhood !== undefined &&
+        (!boundedText(business.neighborhood, 1, 60) ||
+          (value.neighborhoods !== undefined &&
+            !(value.neighborhoods as unknown[]).includes(
+              business.neighborhood,
+            )))) ||
+      (business.imageUrl !== undefined &&
+        business.imageUrl !== "" &&
+        !publicHttpsUrl(business.imageUrl)) ||
+      !recordWithKeys(business.coordinates, ["lat", "lng"]) ||
+      typeof business.coordinates.lat !== "number" ||
+      !Number.isFinite(business.coordinates.lat) ||
+      Math.abs(business.coordinates.lat) > 90 ||
+      typeof business.coordinates.lng !== "number" ||
+      !Number.isFinite(business.coordinates.lng) ||
+      Math.abs(business.coordinates.lng) > 180 ||
+      !boundedArray(business.hours, DATA_LIMITS.schedules)
     )
-  );
+      return false;
+
+    inferredNeighborhoods.add(
+      normalize((business.neighborhood || settings.neighborhood) as string),
+    );
+    if (inferredNeighborhoods.size > DATA_LIMITS.neighborhoods) return false;
+    ids.add(business.id);
+    return business.hours.every(
+      (schedule) =>
+        recordWithKeys(schedule, ["days", "opens", "closes"]) &&
+        boundedArray(schedule.days, 7, 1) &&
+        new Set(schedule.days).size === schedule.days.length &&
+        schedule.days.every(
+          (day) =>
+            typeof day === "number" &&
+            Number.isInteger(day) &&
+            day >= 0 &&
+            day <= 6,
+        ) &&
+        typeof schedule.opens === "string" &&
+        clock.test(schedule.opens) &&
+        typeof schedule.closes === "string" &&
+        clock.test(schedule.closes) &&
+        schedule.opens !== schedule.closes,
+    );
+  });
 }

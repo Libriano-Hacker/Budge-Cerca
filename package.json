@@ -9,14 +9,17 @@
     "preview": "vite preview --host 0.0.0.0 --port 3000 --strictPort",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "prebuild": "node scripts/generate-downloads.mjs",
+    "prebuild": "node scripts/generate-downloads.mjs && node scripts/generate-security.mjs",
     "generate:qr": "node scripts/generate-downloads.mjs",
     "build:mobile": "node scripts/build-mobile.mjs",
     "mobile:sync": "npm run build:mobile && cap sync",
     "android:debug": "bash scripts/build-android.sh",
     "ios:open": "cap open ios",
     "setup:android": "node scripts/setup-android-tools.mjs",
-    "assets:mobile": "node scripts/generate-app-assets.mjs"
+    "assets:mobile": "node scripts/generate-app-assets.mjs",
+    "postbuild": "node scripts/verify-public-build.mjs",
+    "generate:security": "node scripts/generate-security.mjs",
+    "security:check": "npm audit --audit-level=moderate && npm test && npm run build && npm run build:mobile && npm run test:e2e"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",
@@ -53,5 +56,10 @@
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
     "vitest": "^4.0.0"
+  },
+  "overrides": {
+    "xcode@3.0.1": {
+      "uuid": "11.1.1"
+    }
   }
 }

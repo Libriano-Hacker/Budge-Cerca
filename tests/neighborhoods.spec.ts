@@ -1,28 +1,7 @@
 import { expect, test } from "@playwright/test";
-import type { Page } from "@playwright/test";
 import { initialData } from "../src/data";
 import { DEFAULT_NEIGHBORHOOD, NEIGHBORHOOD_KEY } from "../src/neighborhoods";
 import { STORAGE_KEY } from "../src/domain";
-
-async function admin(page: Page) {
-  if (await page.getByRole("button", { name: "Abrir menú" }).isVisible()) {
-    await page.getByRole("button", { name: "Abrir menú" }).click();
-    await page
-      .getByRole("navigation", { name: "Menú móvil", exact: true })
-      .getByRole("button", { name: "Dashboard demo" })
-      .click();
-  } else {
-    await page
-      .getByRole("button", { name: "Dashboard demo", exact: true })
-      .click();
-  }
-}
-async function addNeighborhood(page: Page, name: string) {
-  await page.getByLabel("Nombre del nuevo barrio").fill(name);
-  await page
-    .getByRole("button", { name: "Agregar barrio", exact: true })
-    .click();
-}
 
 test("solo el desplegable permite elegir barrios y conserva la selección sin pestañas ni altas públicas", async ({
   page,
@@ -61,96 +40,6 @@ test("solo el desplegable permite elegir barrios y conserva la selección sin pe
     await expect(page.getByText("1 comercio encontrado")).toBeVisible();
     await expect(page.locator(".business-card")).toHaveCount(1);
   }
-});
-
-test("el dashboard agrega barrios y asigna comercios sin mover los existentes", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await admin(page);
-  await page.getByRole("tab", { name: "Barrios", exact: true }).click();
-  await addNeighborhood(page, "Villa Centenario");
-  await addNeighborhood(page, "villa centenario");
-  await expect(page.getByRole("alert")).toContainText("ya está disponible");
-  await page.getByRole("tab", { name: "Comercios", exact: true }).click();
-  await page
-    .getByRole("button", {
-      name: "Editar Corte Urbano · Barbería",
-      exact: true,
-    })
-    .click();
-  await page
-    .getByLabel("Barrio del comercio", { exact: true })
-    .selectOption("Villa Centenario");
-  await page
-    .getByRole("button", { name: "Guardar comercio", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Ir al inicio" }).click();
-  await page
-    .getByLabel("Seleccionar barrio", { exact: true })
-    .selectOption("Villa Centenario");
-  await expect(page.getByText("1 comercio encontrado")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Corte Urbano · Barbería", exact: true }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.getByLabel("Seleccionar barrio", { exact: true }),
-  ).toHaveValue("Villa Centenario");
-  await page
-    .getByLabel("Seleccionar barrio", { exact: true })
-    .selectOption(DEFAULT_NEIGHBORHOOD);
-  await expect(page.getByText("10 comercios encontrados")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Corte Urbano · Barbería", exact: true }),
-  ).toHaveCount(0);
-});
-
-test("el dashboard elimina barrios vacíos y recupera la selección si se quita el elegido", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await admin(page);
-  await page.getByRole("tab", { name: "Barrios", exact: true }).click();
-  await expect(
-    page.getByRole("button", {
-      name: `Eliminar barrio ${DEFAULT_NEIGHBORHOOD}`,
-      exact: true,
-    }),
-  ).toBeDisabled();
-  await addNeighborhood(page, "Zona temporal");
-  await page.getByRole("button", { name: "Ir al inicio" }).click();
-  await page
-    .getByLabel("Seleccionar barrio", { exact: true })
-    .selectOption("Zona temporal");
-  await expect(page.getByText("0 comercios encontrados")).toBeVisible();
-  await admin(page);
-  await page.getByRole("tab", { name: "Barrios", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Eliminar barrio Zona temporal", exact: true })
-    .click();
-  await expect(
-    page.getByRole("button", {
-      name: "Eliminar barrio Zona temporal",
-      exact: true,
-    }),
-  ).toHaveCount(0);
-  await page
-    .getByRole("button", { name: "Eliminar barrio Banfield", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Ir al inicio" }).click();
-  await expect(
-    page.getByLabel("Seleccionar barrio", { exact: true }),
-  ).toHaveValue(DEFAULT_NEIGHBORHOOD);
-  await page.reload();
-  const selector = page.getByLabel("Seleccionar barrio", { exact: true });
-  expect(await selector.locator("option").allTextContents()).not.toContain(
-    "Zona temporal",
-  );
-  expect(await selector.locator("option").allTextContents()).not.toContain(
-    "Banfield",
-  );
-  await expect(page.getByText("11 comercios encontrados")).toBeVisible();
 });
 
 test("retira el nombre anterior de datos guardados y conserva comercios y favoritos", async ({

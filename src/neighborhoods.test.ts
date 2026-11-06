@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { initialData } from "./data";
 import { filterBusinesses, isAppData } from "./domain";
+import { DATA_LIMITS } from "./securityValidation";
 import {
   addNeighborhood,
   APP_NAME,
@@ -89,6 +90,54 @@ describe("Barrios y actualización de datos guardados", () => {
     expect(
       filterBusinesses([bakery], "", "Todos", { neighborhood: "Banfield" }),
     ).toEqual([]);
+  });
+  it("no agrega barrios con controles ocultos ni supera el límite del catálogo", () => {
+    expect(() => addNeighborhood(initialData, "Villa\u0000 oculta")).toThrow();
+    expect(() => addNeighborhood(initialData, "Villa\ud800")).toThrow();
+    const full = {
+      ...initialData,
+      neighborhoods: [
+        DEFAULT_NEIGHBORHOOD,
+        ...Array.from(
+          { length: DATA_LIMITS.neighborhoods - 1 },
+          (_, i) => `Zona ${i}`,
+        ),
+      ],
+    };
+    expect(isAppData(full)).toBe(true);
+    expect(() => addNeighborhood(full, "Sin espacio")).toThrow(/hasta 200/);
+  });
+  it("la migración conserva los datos y no rebasa los límites al completar sugerencias", () => {
+    const {
+      neighborhoods: _neighborhoods,
+      neighborhoodEdition: _edition,
+      ...base
+    } = initialData;
+    const legacy = {
+      ...base,
+      categories: [
+        "Belleza",
+        ...Array.from(
+          { length: DATA_LIMITS.categories - 1 },
+          (_, i) => `Rubro ${i}`,
+        ),
+      ],
+      businesses: Array.from(
+        { length: DATA_LIMITS.neighborhoods - 1 },
+        (_, i) => ({
+          ...initialData.businesses[0],
+          id: `negocio-${i}`,
+          category: "Belleza",
+          neighborhood: `Zona ${i}`,
+        }),
+      ),
+    };
+    expect(isAppData(legacy)).toBe(true);
+    const updated = prepareData(legacy);
+    expect(isAppData(updated)).toBe(true);
+    expect(updated.businesses).toEqual(legacy.businesses);
+    expect(updated.neighborhoods?.length).toBe(DATA_LIMITS.neighborhoods);
+    expect(updated.categories.length).toBe(DATA_LIMITS.categories);
   });
   it("retira el nombre anterior sin perder comercios ni duplicar el barrio de destino", () => {
     for (const name of ["Ing.Budge", "Ing. Budge", "Ingeniero Budge"]) {

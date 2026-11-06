@@ -5,9 +5,19 @@ const config: CapacitorConfig = {
   appId: app.appId,
   appName: app.appName,
   webDir: "dist-mobile",
+  loggingBehavior: "none",
   backgroundColor: "#081426",
-  android: { backgroundColor: "#081426", allowMixedContent: false },
-  ios: { backgroundColor: "#081426", contentInset: "automatic" },
+  server: { cleartext: false, allowNavigation: [] },
+  android: {
+    backgroundColor: "#081426",
+    allowMixedContent: false,
+    webContentsDebuggingEnabled: false,
+  },
+  ios: {
+    backgroundColor: "#081426",
+    contentInset: "automatic",
+    webContentsDebuggingEnabled: false,
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200,

@@ -3,6 +3,8 @@ import type { Coordinates } from "./domain";
 export const USER_APP =
   import.meta.env.VITE_APP_TARGET === "mobile" || Capacitor.isNativePlatform();
 export const NATIVE_APP = Capacitor.isNativePlatform();
+// Solo una herramienta de desarrollo. Nunca representa autenticación real.
+export const ADMIN_DEMO = import.meta.env.DEV && !USER_APP;
 
 export async function currentPosition(): Promise<Coordinates> {
   if (NATIVE_APP) {

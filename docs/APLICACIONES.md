@@ -1,6 +1,6 @@
 # Aplicaciones de Tu Barrio Cerca
 
-Propuesta **A · Cobalto urbano**, versión **0.1.0**. Los proyectos nativos usan Capacitor y los mismos componentes del buscador. El usuario selecciona su barrio en un único desplegable; las altas y bajas se administran desde Dashboard → Barrios en la web. El eslogan es «Conectá con lo que te rodea». La publicación web y la distribución de binarios nativos son procesos separados.
+Propuesta **A · Cobalto urbano**, versión **0.1.0**. Los proyectos nativos usan Capacitor y los mismos componentes del buscador. El usuario selecciona su barrio en un único desplegable; las altas y bajas se prueban desde Dashboard → Barrios, únicamente en desarrollo. El eslogan es «Conectá con lo que te rodea». La publicación web y la distribución de binarios nativos son procesos separados.
 
 ## Entregables y estado
 
@@ -24,13 +24,13 @@ Requiere Node.js 22.12+ y npm; validado con Node 24.19.0. Desde la raíz:
 npm ci
 npm run dev                 # 0.0.0.0:3000, puerto fijo
 npm test
-npm run build               # dist: web con dashboard demo
+npm run build               # dist: web pública sin dashboard demo
 npm run build:mobile        # dist-mobile: app de usuarios
 npm run test:e2e             # necesita ambos builds y Chromium
 npm run mobile:sync         # recompila usuarios y sincroniza Android + iOS
 ```
 
-Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas de prueba escuchan en 4173 y 4180. La cobertura incluye 21 pruebas unitarias y 34 de navegador: altas y bajas de barrios, migración del nombre anterior, paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
+Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas públicas de prueba escuchan en 4173/4180 y la demo DEV local en 4181. La cobertura incluye 62 pruebas unitarias y 54 de navegador: altas y bajas de barrios, migración del nombre anterior, paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
 
 Los iconos y pantallas de inicio ya están incluidos en los proyectos. Para regenerarlos desde la imagen `resources/logo.png`:
 
@@ -119,7 +119,7 @@ El mismo QR podrá dirigir a las dos tiendas sin reimprimirse, mientras se conse
 
 ## Verificación y trabajo pendiente
 
-Se ejecutaron el build web y móvil, sincronización Capacitor de ambas plataformas, build Android `assembleDebug`, verificación de firma y metadatos del APK, decodificación del QR e inspección visual de escritorio/celular sin desbordamiento horizontal. El desarrollo escucha en el puerto 3000. La suite de validación incluye 55 pruebas automatizadas.
+Se ejecutaron el build web y móvil, sincronización Capacitor de ambas plataformas, build Android `assembleDebug`, verificación de firma y metadatos del APK, decodificación del QR e inspección visual de escritorio/celular sin desbordamiento horizontal. El desarrollo escucha en el puerto 3000. La suite de validación incluye 116 pruebas automatizadas. [Controles y límites de seguridad](../SECURITY.md).
 
 Falta probar el APK en un Android real, compilar y probar en iPhone/Mac, conectar el catálogo compartido con permisos administrativos, cargar comercios reales y completar firma/publicación. Los permisos GPS nativos, los enlaces externos y el comportamiento de los bordes de pantalla deben comprobarse en teléfonos. No se afirma aprobación de tiendas ni publicación realizada.
 

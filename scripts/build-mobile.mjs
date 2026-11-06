@@ -8,5 +8,8 @@ const run = (file, args) =>
     env: { ...process.env, VITE_APP_TARGET: "mobile" },
   });
 run("scripts/generate-downloads.mjs", []);
+run("scripts/generate-security.mjs", []);
 run("node_modules/typescript/bin/tsc", ["-b"]);
 run("node_modules/vite/bin/vite.js", ["build", "--outDir", "dist-mobile"]);
+
+run("scripts/verify-public-build.mjs", ["dist-mobile"]);

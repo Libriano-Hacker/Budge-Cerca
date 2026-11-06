@@ -63,8 +63,8 @@ import Modal from "./Modal";
 import Dashboard from "./Dashboard";
 import DownloadCenter from "./DownloadCenter";
 import {
-  USER_APP,
   NATIVE_APP,
+  ADMIN_DEMO,
   currentPosition,
   locationError,
 } from "./platform";
@@ -75,6 +75,7 @@ import {
   NEIGHBORHOOD_KEY,
   APP_SLOGAN,
 } from "./neighborhoods";
+import { boundedText, DATA_LIMITS, publicHttpsUrl } from "./securityValidation";
 const BusinessMap = lazy(() => import("./BusinessMap"));
 const categoryIcons: Record<string, LucideIcon> = {
   Panaderías: Croissant,
@@ -103,6 +104,8 @@ function readInitial(): { data: AppData; warning: string } {
   try {
     const value = localStorage.getItem(STORAGE_KEY);
     if (!value) return { data: prepareData(initialData), warning: "" };
+    if (value.length > DATA_LIMITS.serializedChars)
+      throw new Error("Catálogo local demasiado grande.");
     const parsed: unknown = JSON.parse(value);
     if (isAppData(parsed)) return { data: prepareData(parsed), warning: "" };
     return {
@@ -120,10 +123,14 @@ function readInitial(): { data: AppData; warning: string } {
 }
 function loadFavorites(): string[] {
   try {
-    const v: unknown = JSON.parse(
-      localStorage.getItem("budge-cerca:favorites") || "[]",
-    );
-    return Array.isArray(v) && v.every((x) => typeof x === "string") ? v : [];
+    const raw = localStorage.getItem("budge-cerca:favorites") || "[]";
+    if (raw.length > DATA_LIMITS.serializedChars) return [];
+    const v: unknown = JSON.parse(raw);
+    return Array.isArray(v) &&
+      v.length <= DATA_LIMITS.favorites &&
+      v.every((x) => boundedText(x, 1, DATA_LIMITS.businessId))
+      ? [...new Set(v)]
+      : [];
   } catch {
     return [];
   }
@@ -276,6 +283,12 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [toast]);
   function saveData(value: AppData) {
+    if (!ADMIN_DEMO || !isAppData(value)) {
+      setWarning(
+        "No se guardaron los cambios: los datos no son válidos o la administración no está habilitada.",
+      );
+      return;
+    }
     const next = prepareData(value);
     const nextNeighborhood =
       next.settings.neighborhood !== data.settings.neighborhood ||
@@ -296,9 +309,18 @@ export default function App() {
     }
   }
   function favorite(id: string) {
-    const next = favorites.includes(id)
-      ? favorites.filter((x) => x !== id)
-      : [...favorites, id];
+    const available = new Set(businesses.map((business) => business.id));
+    if (!available.has(id)) return;
+    const current = favorites.filter((favoriteId) => available.has(favoriteId));
+    const next = current.includes(id)
+      ? current.filter((x) => x !== id)
+      : [...current, id];
+    if (next.length > DATA_LIMITS.favorites) {
+      setToast(
+        "Alcanzaste el límite de favoritos. Quitá uno para guardar otro.",
+      );
+      return;
+    }
     setFavorites(next);
     try {
       localStorage.setItem("budge-cerca:favorites", JSON.stringify(next));
@@ -307,7 +329,7 @@ export default function App() {
     }
   }
   function changeView(next: View) {
-    if (USER_APP && next === "dashboard") return;
+    if (!ADMIN_DEMO && next === "dashboard") return;
     if (!NATIVE_APP)
       history.replaceState(null, "", next === "download" ? "/descargar" : "/");
     setView(next);
@@ -347,10 +369,14 @@ export default function App() {
       const a = (e.target as Element)?.closest?.(
         'a[target="_blank"]',
       ) as HTMLAnchorElement | null;
-      if (!a || !a.href.startsWith("https://")) return;
+      if (!a) return;
       e.preventDefault();
-      const { Browser } = await import("@capacitor/browser");
+      if (!publicHttpsUrl(a.href)) {
+        setToast("Ese enlace no está permitido.");
+        return;
+      }
       try {
+        const { Browser } = await import("@capacitor/browser");
         await Browser.open({ url: a.href });
       } catch {
         setToast("No pudimos abrir ese enlace. Volvé a intentarlo.");
@@ -382,7 +408,9 @@ export default function App() {
     resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function renderCard(b: Business, featuredCard = false) {
-    const Icon = categoryIcons[b.category] || Store;
+    const Icon = Object.hasOwn(categoryIcons, b.category)
+      ? categoryIcons[b.category]
+      : Store;
     const open = isOpen(b);
     return (
       <article
@@ -534,7 +562,7 @@ export default function App() {
             </button>
           </nav>
           <div className="header-actions">
-            {!USER_APP && (
+            {ADMIN_DEMO && (
               <button
                 className={`dashboard-link ${
                   view === "dashboard" ? "active" : ""
@@ -545,7 +573,7 @@ export default function App() {
                 <span>Dashboard demo</span>
               </button>
             )}
-            {!USER_APP && <span className="header-divider" />}
+            {ADMIN_DEMO && <span className="header-divider" />}
             <a
               className={`button button-primary header-contact ${
                 !ownerUrl ? "disabled" : ""
@@ -575,7 +603,7 @@ export default function App() {
             <button onClick={() => changeView("favorites")}>
               Mis favoritos
             </button>
-            {!USER_APP && (
+            {ADMIN_DEMO && (
               <button onClick={() => changeView("dashboard")}>
                 Dashboard demo
               </button>
@@ -595,7 +623,7 @@ export default function App() {
           onInstall={promptInstall}
           onExplore={() => changeView("explore")}
         />
-      ) : !USER_APP && view === "dashboard" ? (
+      ) : ADMIN_DEMO && view === "dashboard" ? (
         <main className="container dashboard-main">
           <Dashboard
             data={data}
@@ -746,7 +774,9 @@ export default function App() {
                 Todos los rubros
               </button>
               {quickCategories.map((c) => {
-                const Icon = categoryIcons[c] || Store;
+                const Icon = Object.hasOwn(categoryIcons, c)
+                  ? categoryIcons[c]
+                  : Store;
                 return (
                   <button
                     key={c}
@@ -1017,7 +1047,7 @@ export default function App() {
             Prototipo · Datos de ejemplo y cambios guardados solo en este
             navegador.
           </span>
-          {!USER_APP && (
+          {ADMIN_DEMO && (
             <button onClick={() => changeView("dashboard")}>
               Administrar demo
               <ArrowRight size={12} />

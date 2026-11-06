@@ -43,6 +43,10 @@ for (const [kind, artifact] of Object.entries({
   if (!(await exists(path)))
     run("curl", [
       "-fLsS",
+      "--proto",
+      "=https",
+      "--proto-redir",
+      "=https",
       "--retry",
       "2",
       "--max-time",

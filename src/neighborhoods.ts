@@ -1,5 +1,6 @@
 import type { AppData } from "./domain";
 import { normalize } from "./domain";
+import { boundedText, DATA_LIMITS } from "./securityValidation";
 
 export const APP_NAME = "Tu Barrio Cerca";
 export const APP_SLOGAN = "Conectá con lo que te rodea.";
@@ -83,13 +84,13 @@ export function prepareData(data: AppData): AppData {
   const neighborhoods = uniqueNames([
     ...getNeighborhoods(migrated),
     ...(upgrade ? DEFAULT_NEIGHBORHOODS : []),
-  ]);
+  ]).slice(0, DATA_LIMITS.neighborhoods);
   const canonical = (name: string) =>
     neighborhoods.find((n) => normalize(n) === normalize(name))!;
   const categories = uniqueNames([
     ...data.categories,
     ...(upgrade ? NEW_CATEGORIES : []),
-  ]);
+  ]).slice(0, DATA_LIMITS.categories);
   return {
     ...data,
     neighborhoodEdition: 2,
@@ -110,7 +111,7 @@ export function prepareData(data: AppData): AppData {
         b.id === "raices" &&
         b.name === "Raíces · Peluquería" &&
         b.category === "Belleza"
-          ? categories.find((c) => normalize(c) === "peluquerias")!
+          ? categories.find((c) => normalize(c) === "peluquerias") || b.category
           : b.category,
       neighborhood: canonical(b.neighborhood),
     })),
@@ -118,11 +119,19 @@ export function prepareData(data: AppData): AppData {
 }
 
 export function addNeighborhood(data: AppData, name: string): AppData {
+  if (!boundedText(name, 1, DATA_LIMITS.neighborhoodName))
+    throw new Error(
+      "Escribí un barrio de entre 1 y 60 caracteres, sin controles ocultos.",
+    );
   const trimmed = migrateNeighborhoodName(name.trim().replace(/\s+/g, " "));
-  if (!trimmed || trimmed.length > 60)
+  if (!trimmed || trimmed.length > DATA_LIMITS.neighborhoodName)
     throw new Error("Escribí un barrio de entre 1 y 60 caracteres.");
   if (getNeighborhoods(data).some((n) => normalize(n) === normalize(trimmed)))
     throw new Error("Ese barrio ya está disponible en el selector.");
+  if (getNeighborhoods(data).length >= DATA_LIMITS.neighborhoods)
+    throw new Error(
+      `Podés configurar hasta ${DATA_LIMITS.neighborhoods} barrios.`,
+    );
   return { ...data, neighborhoods: [...getNeighborhoods(data), trimmed] };
 }
 

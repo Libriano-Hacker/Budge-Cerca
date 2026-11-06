@@ -1,4 +1,5 @@
 import settings from "../app.config.json";
+import { publicHttpsUrl } from "./securityValidation";
 type DistributionConfig = {
   googlePlayUrl: string | null;
   appStoreUrl: string | null;
@@ -11,7 +12,7 @@ export function safeDownloadLink(
   value: string | null,
   kind: "google" | "apple" | "apk",
 ) {
-  if (!value) return null;
+  if (!publicHttpsUrl(value)) return null;
   try {
     const u = new URL(value);
     if (u.protocol !== "https:" || u.username || u.password) return null;

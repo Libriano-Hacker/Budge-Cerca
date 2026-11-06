@@ -28,7 +28,11 @@ export default function BusinessPhoto({
 }) {
   const [failed, setFailed] = useState("");
   const tile =
-    business.id === "el-encuentro" ? 6 : (tiles[business.category] ?? 3);
+    business.id === "el-encuentro"
+      ? 6
+      : Object.hasOwn(tiles, business.category)
+        ? tiles[business.category]
+        : 3;
   const url =
     business.imageUrl &&
     validPhotoUrl(business.imageUrl) &&

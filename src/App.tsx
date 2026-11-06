@@ -57,6 +57,12 @@ import {
 } from "./domain";
 import type { AppData, Business, Coordinates } from "./domain";
 import BusinessPhoto from "./BusinessPhoto";
+import BusinessDetailsView from "./BusinessDetailsView";
+import SearchInput from "./SearchInput";
+import RequestForm from "./RequestForm";
+import useCatalog from "./api/useCatalog";
+import { FEATURE_LABELS } from "./catalogModel";
+import type { FeatureKey } from "./catalogModel";
 import HeroVisual from "./HeroVisual";
 import useExperience from "./useExperience";
 import Modal from "./Modal";
@@ -139,6 +145,10 @@ export default function App() {
   useExperience();
   const [initial] = useState(readInitial);
   const [data, setData] = useState(initial.data);
+  const { status: catalogStatus, configured } = useCatalog(setData);
+  const [request, setRequest] = useState<Business | "new" | null>(null);
+  const [features, setFeatures] = useState<FeatureKey[]>([]);
+  const demoAdmin = ADMIN_DEMO && catalogStatus === "demo" && !configured;
   const [warning, setWarning] = useState(initial.warning);
   const [view, setView] = useState<View>(
     location.pathname.replace(/\/$/, "") === "/descargar"
@@ -158,7 +168,7 @@ export default function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [toast, setToast] = useState("");
   const resultsRef = useRef<HTMLElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
+
   const { settings, businesses, categories } = data;
   const neighborhoods = getNeighborhoods(data);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState(() => {
@@ -201,6 +211,7 @@ export default function App() {
     "Almacenes y kioscos",
   ].filter((c) => categories.includes(c));
   function chooseNeighborhood(name: string) {
+    setFeatures([]);
     setSelectedNeighborhood(name);
     setSelected(null);
     setQuery("");
@@ -220,6 +231,7 @@ export default function App() {
         open: openOnly,
         origin,
         neighborhood: selectedNeighborhood,
+        features,
       }),
     [
       businesses,
@@ -230,6 +242,7 @@ export default function App() {
       openOnly,
       origin,
       selectedNeighborhood,
+      features,
     ],
   );
   const featured = neighborhoodBusinesses.filter((b) => b.featured).slice(0, 3);
@@ -283,7 +296,7 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [toast]);
   function saveData(value: AppData) {
-    if (!ADMIN_DEMO || !isAppData(value)) {
+    if (!demoAdmin || !isAppData(value)) {
       setWarning(
         "No se guardaron los cambios: los datos no son válidos o la administración no está habilitada.",
       );
@@ -329,9 +342,10 @@ export default function App() {
     }
   }
   function changeView(next: View) {
-    if (!ADMIN_DEMO && next === "dashboard") return;
+    if (!demoAdmin && next === "dashboard") return;
     if (!NATIVE_APP)
       history.replaceState(null, "", next === "download" ? "/descargar" : "/");
+    setFeatures([]);
     setView(next);
     setCategory("Todos");
     setQuery("");
@@ -481,7 +495,11 @@ export default function App() {
             {b.category}
             <span className={`status-dot ${open ? "open" : ""}`} />
             <span className={`open-status ${open ? "open" : ""}`}>
-              {!b.hours.length ? "Sin horarios" : open ? "Abierto" : "Cerrado"}
+              {open
+                ? "Abierto"
+                : !b.hours.length && !b.details?.exceptions?.length
+                  ? "Sin horarios"
+                  : "Cerrado"}
             </span>
           </div>
           <button className="card-title" onClick={() => setSelected(b)}>
@@ -521,7 +539,11 @@ export default function App() {
       <div className="announcement">
         <span>Hecho para encontrarnos. Pensado para el barrio.</span>
         <span className="demo-label">
-          Demo · locales e imágenes ilustrativas
+          {catalogStatus === "live"
+            ? "Catálogo del barrio · datos publicados"
+            : catalogStatus === "offline"
+              ? "Sin conexión · última copia del catálogo"
+              : "Demo · locales e imágenes ilustrativas"}
         </span>
       </div>
       <header className="site-header">
@@ -562,7 +584,7 @@ export default function App() {
             </button>
           </nav>
           <div className="header-actions">
-            {ADMIN_DEMO && (
+            {demoAdmin && (
               <button
                 className={`dashboard-link ${
                   view === "dashboard" ? "active" : ""
@@ -573,7 +595,7 @@ export default function App() {
                 <span>Dashboard demo</span>
               </button>
             )}
-            {ADMIN_DEMO && <span className="header-divider" />}
+            {demoAdmin && <span className="header-divider" />}
             <a
               className={`button button-primary header-contact ${
                 !ownerUrl ? "disabled" : ""
@@ -603,7 +625,7 @@ export default function App() {
             <button onClick={() => changeView("favorites")}>
               Mis favoritos
             </button>
-            {ADMIN_DEMO && (
+            {demoAdmin && (
               <button onClick={() => changeView("dashboard")}>
                 Dashboard demo
               </button>
@@ -623,7 +645,7 @@ export default function App() {
           onInstall={promptInstall}
           onExplore={() => changeView("explore")}
         />
-      ) : ADMIN_DEMO && view === "dashboard" ? (
+      ) : demoAdmin && view === "dashboard" ? (
         <main className="container dashboard-main">
           <Dashboard
             data={data}
@@ -656,26 +678,13 @@ export default function App() {
                   lo que <span className="hero-word">te rodea.</span>
                 </h1>
                 <p>{settings.intro}</p>
-                <form
-                  className="hero-search"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    scrollResults();
-                  }}
-                >
-                  <Search size={21} />
-                  <input
-                    ref={searchRef}
-                    aria-label="Buscar comercios"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="¿Qué estás buscando hoy?"
-                  />
-                  <button type="submit">
-                    Buscar
-                    <ArrowRight size={17} />
-                  </button>
-                </form>
+                <SearchInput
+                  query={query}
+                  onChange={setQuery}
+                  businesses={neighborhoodBusinesses}
+                  onSearch={scrollResults}
+                  hero
+                />
                 <button className="hero-download-link" onClick={install}>
                   <Download size={17} />
                   Llevá el barrio en tu celular
@@ -730,15 +739,12 @@ export default function App() {
                   ? "Descubrí lo que prepararon los comercios para vos. Consultá las condiciones directamente con cada local."
                   : "Guardá tus comercios preferidos con el corazón y encontralos siempre acá, en este dispositivo."}
               </p>
-              <div className="subpage-search">
-                <Search size={20} />
-                <input
-                  aria-label="Buscar comercios"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar por nombre, rubro o dirección"
-                />
-              </div>
+              <SearchInput
+                query={query}
+                onChange={setQuery}
+                businesses={neighborhoodBusinesses}
+                onSearch={scrollResults}
+              />
             </section>
           )}
           <div className="neighborhood-marquee" aria-hidden="true">
@@ -891,13 +897,17 @@ export default function App() {
                   <span className="status-dot open" />
                   Abiertos ahora
                 </button>
-                {(query || category !== "Todos" || openOnly) && (
+                {(query ||
+                  category !== "Todos" ||
+                  openOnly ||
+                  features.length > 0) && (
                   <button
                     className="clear-filters"
                     onClick={() => {
                       setQuery("");
                       setCategory("Todos");
                       setOpenOnly(false);
+                      setFeatures([]);
                     }}
                   >
                     Limpiar
@@ -917,6 +927,33 @@ export default function App() {
                     ? "Actualizar mi ubicación"
                     : "Usar mi ubicación"}
               </button>
+            </div>
+            <div
+              className="feature-filters"
+              aria-label="Filtrar por prestaciones confirmadas"
+            >
+              {(Object.keys(FEATURE_LABELS) as FeatureKey[])
+                .filter((key) =>
+                  neighborhoodBusinesses.some((b) =>
+                    b.details?.features?.includes(key),
+                  ),
+                )
+                .map((key) => (
+                  <button
+                    key={key}
+                    className={`filter-chip ${features.includes(key) ? "active" : ""}`}
+                    aria-pressed={features.includes(key)}
+                    onClick={() =>
+                      setFeatures((current) =>
+                        current.includes(key)
+                          ? current.filter((f) => f !== key)
+                          : [...current, key],
+                      )
+                    }
+                  >
+                    {FEATURE_LABELS[key]}
+                  </button>
+                ))}
             </div>
             {gpsMessage && (
               <p className="gps-message" role="status">
@@ -956,11 +993,46 @@ export default function App() {
                     ? "Tocá el corazón de un comercio para guardarlo, o probá con otros filtros."
                     : "Probá con otro nombre o explorá todos los rubros del barrio."}
                 </p>
+                {view !== "favorites" && (
+                  <div className="real-alternatives">
+                    <p>Otros rubros con comercios en este barrio:</p>
+                    <div className="inline-actions">
+                      {[
+                        ...new Set(
+                          neighborhoodBusinesses
+                            .filter(
+                              (b) => view !== "promos" || b.promotion.trim(),
+                            )
+                            .map((b) => b.category),
+                        ),
+                      ]
+                        .slice(0, 5)
+                        .map((c) => (
+                          <button
+                            className="filter-chip"
+                            key={c}
+                            onClick={() => {
+                              setQuery("");
+                              setCategory(c);
+                              setFeatures([]);
+                              setOpenOnly(false);
+                            }}
+                          >
+                            {c}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
                 <button
                   className="button button-primary"
                   onClick={() => {
                     changeView("explore");
-                    searchRef.current?.focus();
+                    document
+                      .querySelector<HTMLInputElement>(
+                        'input[aria-label="Buscar comercios"]',
+                      )
+                      ?.focus();
                   }}
                 >
                   Explorar comercios
@@ -996,16 +1068,12 @@ export default function App() {
                 Sumate a {settings.appName} y conectá con tus próximos clientes.
               </p>
             </div>
-            <a
-              href={ownerUrl || undefined}
-              aria-disabled={!ownerUrl}
-              className={`button button-primary ${!ownerUrl ? "disabled" : ""}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              className="button button-primary"
+              onClick={() => setRequest("new")}
             >
-              Quiero sumar mi comercio
-              <ArrowRight size={17} />
-            </a>
+              Quiero sumar mi comercio <ArrowRight size={17} />
+            </button>
           </section>
           <section className="values-strip container">
             <span>
@@ -1044,10 +1112,13 @@ export default function App() {
         </div>
         <div className="container footer-bottom">
           <span>
-            Prototipo · Datos de ejemplo y cambios guardados solo en este
-            navegador.
+            {catalogStatus === "demo"
+              ? "Prototipo · Datos de ejemplo y cambios guardados solo en este navegador."
+              : catalogStatus === "offline"
+                ? "Copia pública guardada. La información puede haber cambiado."
+                : "Información publicada por el equipo del catálogo."}
           </span>
-          {ADMIN_DEMO && (
+          {demoAdmin && (
             <button onClick={() => changeView("dashboard")}>
               Administrar demo
               <ArrowRight size={12} />
@@ -1096,10 +1167,11 @@ export default function App() {
                 <span
                   className={`status-dot ${isOpen(selected) ? "open" : ""}`}
                 />
-                {!selected.hours.length
-                  ? "Consultar horarios"
-                  : isOpen(selected)
-                    ? "Abierto ahora"
+                {isOpen(selected)
+                  ? "Abierto ahora"
+                  : !selected.hours.length &&
+                      !selected.details?.exceptions?.length
+                    ? "Consultar horarios"
                     : "Cerrado ahora"}
               </span>
               <button
@@ -1150,7 +1222,10 @@ export default function App() {
                 ) : (
                   <p>Consultá los horarios al comercio.</p>
                 )}
-                <small>Hora de Argentina · Pueden variar en feriados.</small>
+                <small>
+                  Hora de Argentina · Las fechas especiales indicadas reemplazan
+                  estos horarios.
+                </small>
               </div>
             </div>
             <div className="detail-info">
@@ -1176,6 +1251,16 @@ export default function App() {
                 </div>
               </div>
             )}
+            <BusinessDetailsView key={selected.id} business={selected} />
+            <button
+              className="text-action report-data"
+              onClick={() => {
+                setRequest(selected);
+                setSelected(null);
+              }}
+            >
+              Informar un dato incorrecto
+            </button>
             <div className="detail-actions">
               <a
                 className="button button-primary"
@@ -1205,11 +1290,30 @@ export default function App() {
               </a>
             </div>
             <p className="detail-disclaimer">
-              Demo: verificá los datos y la ubicación antes de visitar un local.
-              Las imágenes iniciales son ilustrativas. Los recorridos se abren
-              en Google Maps.
+              {catalogStatus === "demo"
+                ? "Demo: verificá los datos y la ubicación antes de visitar un local. Las imágenes iniciales son ilustrativas."
+                : "Confirmá los datos y las condiciones con el comercio antes de visitarlo. Las imágenes de reemplazo son ilustrativas."}{" "}
+              Los recorridos se abren en Google Maps.
             </p>
           </div>
+        </Modal>
+      )}
+      {request && (
+        <Modal
+          title={
+            request === "new"
+              ? "Solicitar alta de comercio"
+              : "Informar una corrección"
+          }
+          onClose={() => setRequest(null)}
+        >
+          <RequestForm
+            data={data}
+            neighborhood={selectedNeighborhood}
+            business={request === "new" ? undefined : request}
+            configured={configured}
+            onClose={() => setRequest(null)}
+          />
         </Modal>
       )}
       {ownerUrl && (

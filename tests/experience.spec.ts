@@ -73,7 +73,7 @@ test("sin WebGL y con movimiento reducido la interfaz conserva contenido y búsq
     "none",
   );
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("panaderias");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await page

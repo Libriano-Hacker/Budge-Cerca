@@ -37,6 +37,13 @@ export default defineConfig(({ command }) => ({
       ],
     },
   },
-  preview: { cors: false, headers },
+  preview: {
+    cors: false,
+    headers,
+    proxy:
+      process.env.TBC_TEST_API === "1"
+        ? { "/api": { target: "http://127.0.0.1:8889", changeOrigin: false } }
+        : undefined,
+  },
   build: { sourcemap: false },
 }));

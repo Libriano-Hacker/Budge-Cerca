@@ -1,3 +1,5 @@
+> Evolución implementada: las mejoras aprobadas 01, 02, 07, 13 y 14 están preparadas con Netlify/Supabase. Incluyen búsqueda guiada, ficha ampliada, solicitudes privadas, calidad/fechas especiales y borradores/vista previa/historial. El proyecto remoto y las claves aún requieren activación: [guía](SUPABASE.md). El texto siguiente documenta la propuesta inicial.
+
 # Tu Barrio Cerca: primera propuesta
 
 Una guía móvil para encontrar comercios, servicios y promociones de un barrio. Marca: **Tu Barrio Cerca**. Eslogan: **«Conectá con lo que te rodea»**. La portada tiene un único desplegable para seleccionar el barrio de búsqueda. Los barrios se agregan y eliminan en la demo DEV desde Dashboard → Barrios; el barrio inicial se elige en «Mi barrio». Cada local se asigna a su zona. El WhatsApp del creador se configuró con el número indicado, interpretado como celular argentino con código internacional.

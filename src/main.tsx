@@ -1,16 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { lazy, Suspense } from "react";
+import { USER_APP } from "./platform";
+const AdminPortal = !USER_APP
+  ? lazy(() => import("./admin/AdminPortal"))
+  : null;
 import "@fontsource-variable/manrope";
 import "./styles.css";
 import "./cobalt.css";
+import "./catalog.css";
 import { NATIVE_APP } from "./platform";
 
 document.documentElement.classList.toggle("native-user-app", NATIVE_APP);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    {AdminPortal && location.pathname.replace(/\/$/, "") === "/gestion" ? (
+      <Suspense fallback={<p>Cargando gestión…</p>}>
+        <AdminPortal />
+      </Suspense>
+    ) : (
+      <App />
+    )}
   </React.StrictMode>,
 );
 

@@ -28,7 +28,7 @@ test("la compilación de usuarios excluye el dashboard y permite buscar y guarda
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Cerrar menú" }).click();
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("barberias");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();

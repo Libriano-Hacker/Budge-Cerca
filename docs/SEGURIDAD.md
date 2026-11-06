@@ -1,3 +1,5 @@
+> Informe histórico del paso 1 sobre el commit de seguridad previo. La evolución posterior incorpora API, Supabase Auth, sesiones y gestión privada: ver [estado actual y comprobaciones](../SECURITY.md) y [activación de Supabase](SUPABASE.md). Las afirmaciones siguientes sobre ausencia de backend describen el alcance de aquella auditoría, no la implementación preparada ahora. La integración remota sigue pendiente de configurar.
+
 # Revisión de seguridad — paso 1
 
 Fecha: **6 de noviembre de 2026**. Base revisada: `9a12723`. Se revisaron código, configuración, dependencias, datos locales, empaquetado móvil y comportamiento en laboratorio. La revisión toma como referencia áreas de OWASP WSTG/ASVS y MASVS/MASTG; no es una certificación de cumplimiento ni una prueba de todos los ataques posibles.

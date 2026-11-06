@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import type { Business } from "./domain";
+import { photoSource } from "./api/client";
 import { validPhotoUrl } from "./domain";
 
 const tiles: Record<string, number> = {
@@ -23,7 +24,7 @@ export default function BusinessPhoto({
   business,
   priority = false,
 }: {
-  business: Pick<Business, "id" | "name" | "category" | "imageUrl">;
+  business: Pick<Business, "id" | "name" | "category" | "imageUrl" | "details">;
   priority?: boolean;
 }) {
   const [failed, setFailed] = useState("");
@@ -33,12 +34,16 @@ export default function BusinessPhoto({
       : Object.hasOwn(tiles, business.category)
         ? tiles[business.category]
         : 3;
+  const gallery = business.details?.photos?.[0];
+  const galleryUrl = gallery ? photoSource(gallery) : null;
   const url =
-    business.imageUrl &&
-    validPhotoUrl(business.imageUrl) &&
-    failed !== business.imageUrl
-      ? business.imageUrl
-      : null;
+    galleryUrl && failed !== galleryUrl
+      ? galleryUrl
+      : business.imageUrl &&
+          validPhotoUrl(business.imageUrl) &&
+          failed !== business.imageUrl
+        ? business.imageUrl
+        : null;
   return (
     <span
       className="business-photo"

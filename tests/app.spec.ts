@@ -14,7 +14,7 @@ test("búsqueda, ficha, promoción, favoritos y contacto del creador", async ({
     /https:\/\/wa.me\/5491150186306/,
   );
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("peluqueria");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();
@@ -96,7 +96,7 @@ test("GPS denegado mantiene el buscador utilizable", async ({ page }) => {
     page.getByRole("status").filter({ hasText: "No se autorizó el GPS" }),
   ).toBeVisible();
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("tornillo");
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();
 });
@@ -108,7 +108,7 @@ test("sin resultados y diseño sin desborde horizontal", async ({ page }) => {
     ),
   ).toBe(true);
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("xyz-sin-resultados");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await expect(
@@ -151,12 +151,12 @@ test("PWA conserva el buscador después de recargar sin conexión", async ({
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await page.reload();
   await expect(
-    page.getByRole("textbox", { name: "Buscar comercios", exact: true }),
+    page.getByRole("combobox", { name: "Buscar comercios", exact: true }),
   ).toBeVisible();
   await context.setOffline(true);
   await page.reload();
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("tornillo");
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();
   await page.getByRole("button", { name: "El Tornillo", exact: true }).click();

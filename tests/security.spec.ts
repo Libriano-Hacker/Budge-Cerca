@@ -250,7 +250,7 @@ for (const example of invalidStorageCases) {
     ).toBeVisible();
     await expect(page.getByRole("alert")).toBeVisible();
     await page
-      .getByRole("textbox", { name: "Buscar comercios", exact: true })
+      .getByRole("combobox", { name: "Buscar comercios", exact: true })
       .fill("tornillo");
     await expect(page.getByText("1 comercio encontrado")).toBeVisible();
     expect(

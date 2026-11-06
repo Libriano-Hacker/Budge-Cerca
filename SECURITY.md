@@ -1,8 +1,9 @@
 # Seguridad de Tu Barrio Cerca
 
-La versión pública es un buscador estático de demostración. No ofrece una API de escritura, cuentas, pagos ni un catálogo compartido. El dashboard demo **solo se habilita en desarrollo** (`npm run dev`), y sus cambios permanecen en ese navegador. Los builds web y móvil excluyen su código; un indicador de rol en localStorage o una URL no habilita administración.
+La web incluye una API Netlify para el catálogo compartido con Supabase y un portal autenticado en `/gestion`. Sin configuración privada, las escrituras fallan cerradas y la app muestra una demo identificada. El dashboard demo anterior solo se habilita en desarrollo; no concede permisos en el servidor.
 
-Esto desactiva la herramienta de prueba en producción, pero **no implementa autenticación de administrador**. Para administrar datos compartidos hay que conectar un servidor con autenticación, autorización por barrio y validación del lado del servidor antes de habilitar operaciones de escritura. Un control en JavaScript no sustituye esos permisos.
+La API verifica identidad con Supabase, exige membresía y alcance por barrio, sesión cifrada HttpOnly/SameSite/CSRF y AAL2 cuando hay TOTP verificado. Las tablas tienen RLS y no permiten acceso directo del navegador; las escrituras SQL se reservan a la service key del servidor, con comprobación adicional del actor. Borradores, solicitudes y fotos sin publicar no forman parte del catálogo público. [Configuración, límites y verificación](docs/SUPABASE.md).
+
 
 ## Controles incluidos
 
@@ -32,7 +33,7 @@ Requiere Node.js 22.12+ y Chromium (por defecto `/usr/bin/chromium`; se puede in
 
 No exponer el servidor de desarrollo como sitio de producción. Los cambios locales previos se conservan, pero no deben tomarse como un catálogo confiable para otras personas. Datos públicos y configuración de contacto son visibles por diseño; no se deben incluir secretos ni datos privados de clientes en `src/data.ts` o archivos de `public/`.
 
-La protección de cuenta y del proyecto en GitHub/Netlify, los registros de acceso y las políticas de publicación requieren acceso del propietario. No se han cambiado esas políticas con credenciales inexistentes. Mantener MFA, acceso mínimo y revisión de cambios al operar esas cuentas. Si se agregan sesiones o APIs, revisar nuevamente autorización, CSRF, caché y rate limiting antes de publicarlas.
+La protección de cuenta y del proyecto en GitHub/Netlify, los registros de acceso y las políticas de publicación requieren acceso del propietario. No se han cambiado esas políticas con credenciales inexistentes. Mantener MFA, acceso mínimo y revisión de cambios al operar esas cuentas. La implementación local de sesiones/API se prueba con Postgres e identidad de prueba. Antes de activar producción deben verificarse las migraciones, Auth, almacenamiento, cookies y límites en el proyecto real; no se dispone todavía de ese proyecto ni de sus claves.
 
 ## Informe de revisión
 

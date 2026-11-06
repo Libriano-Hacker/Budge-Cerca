@@ -14,7 +14,7 @@ Propuesta **A · Cobalto urbano**, versión **0.1.0**. Los proyectos nativos usa
 
 La app de usuarios tiene búsqueda, selección de barrio, fichas, promociones, favoritos y GPS solicitado al tocar el botón. No incluye los controles del dashboard. Los enlaces externos se abren con el navegador del dispositivo y Android tiene manejo del botón Atrás. No se pide ubicación en segundo plano.
 
-El catálogo sigue siendo una **demostración local**: los comercios, coordenadas y fotografías son ilustrativos. No hay base de datos compartida, servidor de catálogo ni autenticación administrativa. Los cambios de la web no llegan automáticamente a los teléfonos. La ubicación se mantiene en memoria; favoritos y selección de barrio se guardan en cada dispositivo. Ocultar el dashboard en el paquete móvil no sustituye la autorización de un futuro servidor.
+Sin configuración remota se muestra una **demostración local** con comercios, coordenadas y fotos ilustrativos. La integración Supabase/Netlify está preparada: al [activarla](SUPABASE.md), los dispositivos con conexión consultan el catálogo publicado y reciben las publicaciones de la web. Los borradores permanecen privados. La ubicación se mantiene en memoria; favoritos y selección de barrio se guardan en cada dispositivo. El paquete móvil excluye la gestión; los permisos se verifican en el servidor.
 
 ## Desarrollo y pruebas
 
@@ -30,7 +30,7 @@ npm run test:e2e             # necesita ambos builds y Chromium
 npm run mobile:sync         # recompila usuarios y sincroniza Android + iOS
 ```
 
-Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas públicas de prueba escuchan en 4173/4180 y la demo DEV local en 4181. La cobertura incluye 62 pruebas unitarias y 54 de navegador: altas y bajas de barrios, migración del nombre anterior, paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
+Las pruebas E2E usan Chromium en `/usr/bin/chromium`; otra ubicación se indica mediante `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Las vistas públicas de prueba escuchan en 4173/4180 y la demo DEV local en 4181. La cobertura incluye pruebas unitarias, SQL/API y de navegador: altas y bajas de barrios, migración del nombre anterior, paquete móvil sin dashboard, GPS del navegador, persistencia de favoritos y página de descargas. Estas pruebas no equivalen a ejecutar la app en un teléfono real.
 
 Los iconos y pantallas de inicio ya están incluidos en los proyectos. Para regenerarlos desde la imagen `resources/logo.png`:
 
@@ -121,6 +121,6 @@ El mismo QR podrá dirigir a las dos tiendas sin reimprimirse, mientras se conse
 
 Se ejecutaron el build web y móvil, sincronización Capacitor de ambas plataformas, build Android `assembleDebug`, verificación de firma y metadatos del APK, decodificación del QR e inspección visual de escritorio/celular sin desbordamiento horizontal. El desarrollo escucha en el puerto 3000. La suite de validación incluye 116 pruebas automatizadas. [Controles y límites de seguridad](../SECURITY.md).
 
-Falta probar el APK en un Android real, compilar y probar en iPhone/Mac, conectar el catálogo compartido con permisos administrativos, cargar comercios reales y completar firma/publicación. Los permisos GPS nativos, los enlaces externos y el comportamiento de los bordes de pantalla deben comprobarse en teléfonos. No se afirma aprobación de tiendas ni publicación realizada.
+Falta probar el APK en un Android real, compilar y probar en iPhone/Mac, activar y verificar la integración preparada de Supabase/Netlify con un proyecto real y permisos administrativos, cargar comercios reales y completar firma/publicación. Los permisos GPS nativos, los enlaces externos y el comportamiento de los bordes de pantalla deben comprobarse en teléfonos. No se afirma aprobación de tiendas ni publicación realizada.
 
 Vistas de revisión: [escritorio](diseno/cobalto-escritorio.png), [celular](diseno/cobalto-celular.png), [instalación y QR](diseno/descargas-escritorio.png).

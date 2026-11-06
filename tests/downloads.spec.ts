@@ -38,6 +38,6 @@ test("la página de instalación muestra un QR válido y estados reales de las t
     .getByRole("button", { name: "Explorar comercios", exact: true })
     .click();
   await expect(
-    page.getByRole("textbox", { name: "Buscar comercios", exact: true }),
+    page.getByRole("combobox", { name: "Buscar comercios", exact: true }),
   ).toBeVisible();
 });

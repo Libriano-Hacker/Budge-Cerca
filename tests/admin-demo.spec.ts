@@ -70,7 +70,7 @@ test("dashboard cambia marca, agrega rubro y comercio, conserva y elimina datos"
   await expect(dialog).not.toBeVisible();
   await page.reload();
   await page
-    .getByRole("textbox", { name: "Buscar comercios", exact: true })
+    .getByRole("combobox", { name: "Buscar comercios", exact: true })
     .fill("Juguetería de Prueba");
   await expect(page.getByText("1 comercio encontrado")).toBeVisible();
   await expect(

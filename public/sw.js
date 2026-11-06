@@ -1,4 +1,4 @@
-const CACHE = "budge-cerca-v7-security";
+const CACHE = "budge-cerca-v8-catalog";
 const DOCUMENTS = new Set(["/", "/descargar"]);
 const PRECACHE = [
   "/",

@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import type { AppData, Business, Hours, Settings } from "./domain";
 import { isAppData, normalize, validWhatsapp, validPhotoUrl } from "./domain";
+import BusinessDetailsEditor from "./BusinessDetailsEditor";
+import type { BusinessDetails, PhotoItem } from "./catalogModel";
 import { DATA_LIMITS } from "./securityValidation";
 import { dayNames } from "./data";
 import Modal from "./Modal";
@@ -750,14 +752,20 @@ function SettingsForm({
     </form>
   );
 }
-function BusinessForm({
+export function BusinessForm({
   business,
   categories,
   neighborhoods,
   defaultNeighborhood,
   onSave,
   onCancel,
+  seed,
+  uploadPhoto,
+  saveLabel = "",
 }: {
+  seed?: Partial<Business>;
+  uploadPhoto?: (file: File, neighborhood: string) => Promise<PhotoItem>;
+  saveLabel?: string;
   business: Business | null;
   categories: string[];
   neighborhoods: string[];
@@ -765,17 +773,22 @@ function BusinessForm({
   onSave: (business: Business) => void;
   onCancel: () => void;
 }) {
+  const source = business || seed;
+  const [uploading, setUploading] = useState(false);
+  const [details, setDetails] = useState<BusinessDetails>(
+    business?.details || {},
+  );
   const [draft, setDraft] = useState({
-    name: business?.name || "",
-    neighborhood: business?.neighborhood || defaultNeighborhood,
-    description: business?.description || "",
-    address: business?.address || "",
-    category: business?.category || categories[0] || "",
-    whatsapp: business?.whatsapp || "",
-    promotion: business?.promotion || "",
-    featured: business?.featured || false,
-    color: business?.color || "sand",
-    imageUrl: business?.imageUrl || "",
+    name: source?.name || "",
+    neighborhood: source?.neighborhood || defaultNeighborhood,
+    description: source?.description || "",
+    address: source?.address || "",
+    category: source?.category || categories[0] || "",
+    whatsapp: source?.whatsapp || "",
+    promotion: source?.promotion || "",
+    featured: source?.featured || false,
+    color: source?.color || "sand",
+    imageUrl: source?.imageUrl || "",
     lat: business ? String(business.coordinates.lat) : "",
     lng: business ? String(business.coordinates.lng) : "",
   });
@@ -789,6 +802,10 @@ function BusinessForm({
     setDraft((prev) => ({ ...prev, [key]: value }));
   function submit(e: FormEvent) {
     e.preventDefault();
+    if (uploading) {
+      setError("Esperá a que termine la subida de la foto.");
+      return;
+    }
     if (
       !draft.name.trim() ||
       !draft.address.trim() ||
@@ -829,7 +846,7 @@ function BusinessForm({
       );
       return;
     }
-    onSave({
+    const candidate: Business = {
       id: business?.id || crypto.randomUUID(),
       name: draft.name.trim(),
       description: draft.description.trim(),
@@ -850,7 +867,28 @@ function BusinessForm({
         .join("")
         .toUpperCase(),
       hours,
-    });
+      details,
+    };
+    const check = {
+      version: 1,
+      neighborhoodEdition: 2,
+      neighborhoods,
+      categories,
+      businesses: [candidate],
+      settings: {
+        appName: "Catálogo",
+        neighborhood: defaultNeighborhood,
+        ownerWhatsapp: "",
+        intro: "Catálogo",
+      },
+    };
+    if (!isAppData(check)) {
+      setError(
+        "Revisá los servicios, fotos, fechas, precios y horarios: hay datos inválidos o repetidos.",
+      );
+      return;
+    }
+    onSave(candidate);
   }
   return (
     <form className="business-form" onSubmit={submit}>
@@ -1114,6 +1152,16 @@ function BusinessForm({
           </span>
         </label>
       </div>
+      <BusinessDetailsEditor
+        onBusyChange={setUploading}
+        value={details}
+        onChange={setDetails}
+        upload={
+          uploadPhoto
+            ? (file) => uploadPhoto(file, draft.neighborhood)
+            : undefined
+        }
+      />
       {error && (
         <p className="form-error" role="alert">
           {error}
@@ -1127,9 +1175,9 @@ function BusinessForm({
         >
           Cancelar
         </button>
-        <button className="button button-primary">
+        <button className="button button-primary" disabled={uploading}>
           <Check size={16} />
-          {business ? "Guardar comercio" : "Agregar comercio"}
+          {saveLabel || (business ? "Guardar comercio" : "Agregar comercio")}
         </button>
       </div>
     </form>

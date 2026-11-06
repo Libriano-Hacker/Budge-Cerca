@@ -33,3 +33,9 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Audit production and development dependencies
         run: npm audit --audit-level=moderate
+      - name: Test catalog validation and server permissions
+        run: npm test
+      - name: Build public web and user app
+        run: |
+          npm run build
+          npm run build:mobile

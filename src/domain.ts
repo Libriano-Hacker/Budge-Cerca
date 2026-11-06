@@ -6,6 +6,8 @@ import {
   recordWithKeys,
   wellFormedUnicode,
 } from "./securityValidation";
+import { argentinaDate, previousDate, validDetails } from "./catalogModel";
+import type { BusinessDetails, FeatureKey } from "./catalogModel";
 
 export type Coordinates = { lat: number; lng: number };
 export type Hours = { days: number[]; opens: string; closes: string };
@@ -24,6 +26,7 @@ export type Business = {
   initials: string;
   imageUrl?: string;
   neighborhood?: string;
+  details?: BusinessDetails;
 };
 export type Settings = {
   appName: string;
@@ -103,14 +106,30 @@ export function isOpen(business: Business, date = new Date()) {
     part("weekday"),
   );
   const now = Number(part("hour")) * 60 + Number(part("minute"));
-  return business.hours.some((schedule) => {
-    const start = minutes(schedule.opens),
-      end = minutes(schedule.closes);
-    return end > start
-      ? schedule.days.includes(day) && now >= start && now < end
-      : (schedule.days.includes(day) && now >= start) ||
-          (schedule.days.includes((day + 6) % 7) && now < end);
-  });
+  const today = argentinaDate(date);
+  const special = business.details?.exceptions?.find((e) => e.date === today);
+  if (special?.closed) return false;
+  const periods = special
+    ? special.periods
+    : business.hours.filter((h) => h.days.includes(day));
+  if (
+    periods.some((h) =>
+      h.closes > h.opens
+        ? now >= minutes(h.opens) && now < minutes(h.closes)
+        : now >= minutes(h.opens),
+    )
+  )
+    return true;
+  if (special) return false;
+  const yesterdaySpecial = business.details?.exceptions?.find(
+    (e) => e.date === previousDate(today),
+  );
+  const prior = yesterdaySpecial
+    ? yesterdaySpecial.closed
+      ? []
+      : yesterdaySpecial.periods
+    : business.hours.filter((h) => h.days.includes((day + 6) % 7));
+  return prior.some((h) => h.closes < h.opens && now < minutes(h.closes));
 }
 export function filterBusinesses(
   businesses: Business[],
@@ -123,6 +142,7 @@ export function filterBusinesses(
     open?: boolean;
     origin?: Coordinates | null;
     neighborhood?: string;
+    features?: FeatureKey[];
   } = {},
 ) {
   const term = normalize(query);
@@ -131,11 +151,15 @@ export function filterBusinesses(
       (!options.neighborhood || b.neighborhood === options.neighborhood) &&
       (!term ||
         normalize(
-          `${b.name} ${b.category} ${b.description} ${b.address}`,
+          `${b.name} ${b.category} ${b.description} ${b.address} ${(b.details?.services || []).map((s) => `${s.name} ${s.description || ""}`).join(" ")}`,
         ).includes(term)) &&
       (category === "Todos" || b.category === category) &&
       (!options.promotions || Boolean(b.promotion.trim())) &&
       (!options.onlyFavorites || options.favorites?.includes(b.id)) &&
+      (!options.features?.length ||
+        options.features.every((feature) =>
+          b.details?.features?.includes(feature),
+        )) &&
       (!options.open || isOpen(b)),
   );
   return options.origin
@@ -223,7 +247,7 @@ export function isAppData(value: unknown): value is AppData {
           "coordinates",
           "hours",
         ],
-        ["imageUrl", "neighborhood"],
+        ["imageUrl", "neighborhood", "details"],
       ) ||
       !boundedText(business.id, 1, DATA_LIMITS.businessId) ||
       !/^[a-zA-Z0-9][a-zA-Z0-9._:-]*$/.test(business.id) ||
@@ -255,7 +279,8 @@ export function isAppData(value: unknown): value is AppData {
       typeof business.coordinates.lng !== "number" ||
       !Number.isFinite(business.coordinates.lng) ||
       Math.abs(business.coordinates.lng) > 180 ||
-      !boundedArray(business.hours, DATA_LIMITS.schedules)
+      !boundedArray(business.hours, DATA_LIMITS.schedules) ||
+      (business.details !== undefined && !validDetails(business.details))
     )
       return false;
 

@@ -14,6 +14,17 @@ export default defineConfig({
   },
   webServer: [
     {
+      command: "TBC_TEST_FIXTURE=1 node scripts/test-catalog-server.mjs",
+      url: "http://127.0.0.1:8889/api/config",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command:
+        "TBC_TEST_API=1 npm run preview -- --host 127.0.0.1 --port 4190 --strictPort",
+      url: "http://127.0.0.1:4190",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
       command: "npm run preview -- --port 4173 --strictPort",
       url: "http://127.0.0.1:4173",
       reuseExistingServer: !process.env.CI,
@@ -32,13 +43,26 @@ export default defineConfig({
   ],
   projects: [
     {
+      name: "trusted-catalog",
+      testMatch: "**/trusted-catalog.spec.ts",
+      use: { ...devices["Desktop Chrome"], baseURL: "http://127.0.0.1:4190" },
+    },
+    {
       name: "desktop",
-      testIgnore: ["**/native-preview.spec.ts", "**/admin-demo.spec.ts"],
+      testIgnore: [
+        "**/native-preview.spec.ts",
+        "**/admin-demo.spec.ts",
+        "**/trusted-catalog.spec.ts",
+      ],
       use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "mobile",
-      testIgnore: ["**/native-preview.spec.ts", "**/admin-demo.spec.ts"],
+      testIgnore: [
+        "**/native-preview.spec.ts",
+        "**/admin-demo.spec.ts",
+        "**/trusted-catalog.spec.ts",
+      ],
       use: { ...devices["Pixel 7"] },
     },
     {

@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'"
+    />
+    <title>Tu Barrio Cerca · Propuesta del paso 2</title>
+    <link rel="stylesheet" href="proposal.css" />
+    <script defer src="catalog.js"></script>
+    <script defer src="proposal.js"></script>
+  </head>
+  <body>
+    <header class="review-header">
+      <a class="review-brand" href="#"
+        ><span class="logo"><i data-icon="pin"></i></span
+        ><span
+          >Tu Barrio Cerca<small>CONCEPTOS PARA ELEGIR · PASO 2</small></span
+        ></a
+      >
+      <span class="draft-pill"><span></span> Propuesta · sin publicar</span>
+    </header>
+    <main class="review-main">
+      <div class="review-intro">
+        <div>
+          <span class="eyebrow">MISMA IDENTIDAD. MÁS POSIBILIDADES.</span>
+          <h1>El próximo capítulo<br />de tu barrio.</h1>
+        </div>
+        <p>
+          14 mejoras, cuatro pantallas de referencia.<br />Explorá los bosquejos
+          y elegí qué querés construir.<br /><strong
+            >La web actual no cambia.</strong
+          >
+        </p>
+      </div>
+      <nav
+        class="review-tabs"
+        role="tablist"
+        aria-label="Bosquejos de la propuesta"
+      >
+        <button
+          role="tab"
+          id="tab-usuarios"
+          aria-selected="true"
+          aria-controls="usuarios"
+          data-screen="usuarios"
+        >
+          <i data-icon="phone"></i> Experiencia del vecino <span>01 / 02</span>
+        </button>
+        <button
+          role="tab"
+          id="tab-resumen"
+          aria-selected="false"
+          aria-controls="resumen"
+          data-screen="resumen"
+        >
+          <i data-icon="grid"></i> Resumen del creador <span>03</span>
+        </button>
+        <button
+          role="tab"
+          id="tab-publicar"
+          aria-selected="false"
+          aria-controls="publicar"
+          data-screen="publicar"
+        >
+          <i data-icon="layers"></i> Revisar y publicar <span>04</span>
+        </button>
+        <button
+          role="tab"
+          id="tab-lista"
+          aria-selected="false"
+          aria-controls="lista"
+          data-screen="lista"
+        >
+          <i data-icon="check"></i> Elegir mejoras <span>14</span>
+        </button>
+      </nav>
+      <p class="review-note">
+        <i data-icon="info"></i> Bosquejos interactivos con datos, cifras y
+        beneficios ficticios. Fotos ilustrativas actuales. Los botones solo
+        simulan recorridos.
+      </p>
+
+      <section
+        id="usuarios"
+        class="review-pane active"
+        role="tabpanel"
+        aria-labelledby="tab-usuarios"
+      >
+        <div id="users-capture" class="capture-board">
+          <div class="board-heading">
+            <div>
+              <span class="eyebrow">01 + 02 / USUARIOS</span>
+              <h2>Encontrar. Elegir. Conectar.</h2>
+            </div>
+            <span class="sample-label">BOSQUEJO · DATOS DE EJEMPLO</span>
+          </div>
+          <div class="user-storyboard">
+            <div class="phone-column">
+              <p class="frame-label"><b>01</b> Una búsqueda más útil</p>
+              <div class="phone phone-explore">
+                <div class="phone-status">
+                  <span>9:41</span><span>●●● ▰</span>
+                </div>
+                <div class="phone-brand">
+                  <span class="logo tiny"><i data-icon="pin"></i></span
+                  ><strong>Tu Barrio Cerca</strong
+                  ><button
+                    class="icon-button"
+                    data-idea="05"
+                    aria-label="Ver propuesta de cuenta opcional"
+                  >
+                    <i data-icon="user"></i>
+                  </button>
+                </div>
+                <label class="phone-neighborhood"
+                  ><i data-icon="pin"></i
+                  ><span class="sr-only">Seleccionar barrio del bosquejo</span
+                  ><select id="demo-neighborhood">
+                    <option>Barrio Centro</option>
+                    <option>Banfield</option>
+                    <option>Villa Fiorito</option></select
+                  ><i data-icon="chevron"></i
+                ></label>
+                <div class="phone-hero">
+                  <span class="eyebrow">DESCUBRÍ LO LOCAL</span>
+                  <h3>Conectá con<br />lo que <em>te rodea.</em></h3>
+                  <span>Lo que necesitás, donde estás.</span>
+                </div>
+                <div class="phone-content">
+                  <div class="search-mock">
+                    <i data-icon="search"></i
+                    ><input
+                      id="demo-search"
+                      aria-label="Buscar en el bosquejo"
+                      value="barba"
+                    /><button
+                      class="number-tag"
+                      data-idea="01"
+                      aria-label="Ver mejora 01"
+                    >
+                      01
+                    </button>
+                  </div>
+                  <div class="search-suggestions">
+                    <button data-suggestion="Barberías">
+                      <i data-icon="search"></i><b>Barberías</b
+                      ><span>Rubro</span></button
+                    ><button data-suggestion="Corte de barba">
+                      <i data-icon="sparkle"></i><b>Corte de barba</b
+                      ><span>Servicio</span>
+                    </button>
+                  </div>
+                  <div class="filter-row">
+                    <button class="filter active" data-filter="turnos">
+                      Con turnos</button
+                    ><button class="filter" data-filter="accesible">
+                      Accesible</button
+                    ><button class="filter" data-filter="tarjeta">
+                      Tarjeta
+                    </button>
+                  </div>
+                  <div class="result-line">
+                    <strong>Para vos, en tu barrio</strong
+                    ><span id="filter-status">Ejemplo filtrado</span>
+                  </div>
+                  <article class="result-shop">
+                    <div class="shop-photo photo-beauty">
+                      <span class="mini-badge">Foto ilustrativa</span
+                      ><button
+                        class="heart"
+                        data-follow
+                        aria-label="Guardar favorito del bosquejo"
+                        aria-pressed="false"
+                      >
+                        <i data-icon="heart"></i>
+                      </button>
+                    </div>
+                    <div class="result-shop-copy">
+                      <div>
+                        <h4>Corte Urbano</h4>
+                        <span
+                          >Barbería ·
+                          <span data-neighborhood>Barrio Centro</span></span
+                        >
+                      </div>
+                      <button
+                        class="round-arrow"
+                        data-action="open-detail"
+                        aria-label="Ver ficha del bosquejo"
+                      >
+                        <i data-icon="arrow"></i>
+                      </button>
+                    </div>
+                    <div class="shop-attributes">
+                      <span><i data-icon="check"></i> Con turnos</span
+                      ><span>Medios de pago</span>
+                    </div>
+                  </article>
+                </div>
+                <div class="phone-bottom">
+                  <button
+                    class="active"
+                    data-demo="Ya estás explorando el bosquejo."
+                  >
+                    <i data-icon="compass"></i>Explorar</button
+                  ><button data-action="coupon">
+                    <i data-icon="tag"></i>Promos</button
+                  ><button data-idea="05">
+                    <i data-icon="heart"></i>Favoritos</button
+                  ><button
+                    data-demo="La página de instalación actual se conserva. Este bosquejo no instala aplicaciones."
+                  >
+                    <i data-icon="download"></i>Descargar
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="phone-column">
+              <p class="frame-label"><b>02</b> Una ficha que resuelve más</p>
+              <div class="phone phone-detail" id="detail-phone">
+                <div class="phone-status">
+                  <span>9:41</span><span>●●● ▰</span>
+                </div>
+                <div class="detail-cover shop-photo photo-beauty">
+                  <button
+                    class="cover-control"
+                    data-demo="Volverías a los resultados, conservando tu búsqueda."
+                    aria-label="Volver a búsqueda"
+                  >
+                    <i data-icon="back"></i></button
+                  ><button
+                    class="cover-control share-control"
+                    data-idea="06"
+                    aria-label="Ver fichas compartibles"
+                  >
+                    <i data-icon="share"></i></button
+                  ><span class="mini-badge">Galería ilustrativa</span>
+                </div>
+                <div class="phone-content detail-content">
+                  <span class="eyebrow"
+                    >BARBERÍA /
+                    <span data-neighborhood>BARRIO CENTRO</span></span
+                  >
+                  <div class="detail-title">
+                    <h3>Corte Urbano</h3>
+                    <button
+                      class="number-tag"
+                      data-idea="02"
+                      aria-label="Ver mejora 02"
+                    >
+                      02
+                    </button>
+                  </div>
+                  <p class="checked-line">
+                    <i data-icon="check"></i> Datos revisados
+                    <span>· ejemplo</span>
+                  </p>
+                  <div class="gallery-row">
+                    <span class="shop-photo photo-beauty"></span
+                    ><span class="shop-photo photo-cafe"></span
+                    ><button data-idea="02">
+                      + fotos<i data-icon="image"></i>
+                    </button>
+                  </div>
+                  <div class="service-title">
+                    <h4>Servicios</h4>
+                    <small>Precios a confirmar</small>
+                  </div>
+                  <div class="service-row">
+                    <span>Corte de cabello</span><b>Consultar</b>
+                  </div>
+                  <div class="service-row">
+                    <span>Corte + barba</span><b>Consultar</b>
+                  </div>
+                  <div class="coupon-card">
+                    <div>
+                      <span class="eyebrow">BENEFICIO DE EJEMPLO</span
+                      ><button
+                        class="number-tag"
+                        data-idea="03"
+                        aria-label="Ver mejora 03"
+                      >
+                        03
+                      </button>
+                    </div>
+                    <strong>15% en corte + barba</strong>
+                    <p>Ejemplo: hasta el 30/11 · 20 cupos</p>
+                    <button data-action="coupon">
+                      Ver condiciones <i data-icon="arrow"></i>
+                    </button>
+                  </div>
+                  <button class="button primary full" data-action="appointment">
+                    <i data-icon="calendar"></i> Solicitar turno
+                    <span class="inline-id">04</span>
+                  </button>
+                  <div class="detail-action-row">
+                    <button
+                      class="button secondary"
+                      data-demo="En la versión definitiva, abriría WhatsApp con el mensaje que revisaste. No se envía nada desde este bosquejo."
+                    >
+                      <i data-icon="chat"></i> WhatsApp</button
+                    ><button
+                      class="button secondary"
+                      data-demo="El recorrido actual con Google Maps se conserva. Este bosquejo no calcula tiempos."
+                    >
+                      <i data-icon="pin"></i> Cómo llegar
+                    </button>
+                  </div>
+                  <button class="follow-line" data-alerts aria-pressed="false">
+                    <span
+                      ><i data-icon="bell"></i> Seguir novedades <b>05</b></span
+                    ><span class="toggle"></span>
+                  </button>
+                  <button class="report-link" data-idea="07">
+                    Informar un dato incorrecto
+                  </button>
+                </div>
+              </div>
+            </div>
+            <aside class="story-notes">
+              <span class="eyebrow">¿QUÉ MEJORA?</span>
+              <h3>Menos dudas.<br />Más conexiones.</h3>
+              <button class="note-card" data-idea="01">
+                <span>01</span>
+                <div>
+                  <h4>Buscá como hablás</h4>
+                  <p>
+                    Sugerencias y filtros de servicios, pago y accesibilidad.
+                  </p>
+                </div>
+              </button>
+              <button class="note-card" data-idea="02">
+                <span>02</span>
+                <div>
+                  <h4>Elegí con información</h4>
+                  <p>Galería, servicios, precios y datos revisados.</p>
+                </div>
+              </button>
+              <button class="note-card" data-idea="03">
+                <span>03 / 04</span>
+                <div>
+                  <h4>Pasá a la acción</h4>
+                  <p>Beneficios con condiciones y solicitudes de turno.</p>
+                </div>
+              </button>
+              <button class="note-card" data-idea="05">
+                <span>05 / 06</span>
+                <div>
+                  <h4>Volvé y compartí</h4>
+                  <p>
+                    Avisos elegidos, favoritos recuperables y ficha compartible.
+                  </p>
+                </div>
+              </button>
+              <p class="note-foot">
+                Se conserva el estilo A, las fotos y un único desplegable de
+                barrios. Todos los datos de estas pantallas son ficticios.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="resumen"
+        class="review-pane"
+        role="tabpanel"
+        aria-labelledby="tab-resumen"
+        hidden
+      >
+        <div id="summary-capture" class="capture-board">
+          <div class="board-heading">
+            <div>
+              <span class="eyebrow">03 / DASHBOARD DEL CREADOR</span>
+              <h2>Una vista para saber qué necesita tu barrio.</h2>
+            </div>
+            <span class="sample-label">BOSQUEJO · CIFRAS FICTICIAS</span>
+          </div>
+          <div class="desktop-mock">
+            <div class="window-bar">
+              <span class="window-dots">● ● ●</span
+              ><span>Tu Barrio Cerca / Espacio del creador propuesto</span
+              ><span
+                ><i data-icon="lock"></i> Acceso protegido a implementar</span
+              >
+            </div>
+            <div class="desktop-body">
+              <aside class="admin-sidebar">
+                <div class="admin-logo">
+                  <span class="logo small"><i data-icon="pin"></i></span
+                  ><strong>Tu Barrio<br />Cerca</strong>
+                </div>
+                <span class="sidebar-label">TU ESPACIO</span
+                ><button class="active"><i data-icon="grid"></i> Resumen</button
+                ><button data-screen="publicar">
+                  <i data-icon="shop"></i> Comercios</button
+                ><button data-idea="07">
+                  <i data-icon="inbox"></i> Solicitudes <b>4</b></button
+                ><button data-idea="09"><i data-icon="tag"></i> Campañas</button
+                ><button data-idea="10">
+                  <i data-icon="chart"></i> Estadísticas</button
+                ><button data-idea="13">
+                  <i data-icon="check"></i> Calidad del catálogo</button
+                ><span class="sidebar-label">ADMINISTRACIÓN</span
+                ><button data-idea="11">
+                  <i data-icon="upload"></i> Importar CSV</button
+                ><button data-idea="08">
+                  <i data-icon="users"></i> Comerciantes</button
+                ><button data-idea="12">
+                  <i data-icon="layers"></i> Espacios y planes
+                </button>
+                <div class="sidebar-account">
+                  <span>TC</span>
+                  <div>
+                    <strong>Propietario</strong><small>Perfil de ejemplo</small>
+                  </div>
+                </div>
+              </aside>
+              <div class="admin-content">
+                <div class="admin-topline">
+                  <span>RESUMEN DEL BARRIO</span
+                  ><button class="space-selector" data-idea="12">
+                    <i data-icon="pin"></i> Barrio Centro
+                    <i data-icon="chevron"></i><b>12</b>
+                  </button>
+                </div>
+                <div class="admin-heading">
+                  <div>
+                    <h3>Tu barrio, listo para crecer.</h3>
+                    <p>
+                      Tu actividad, tus pendientes y las próximas oportunidades.
+                    </p>
+                  </div>
+                  <button class="button secondary" data-screen="usuarios">
+                    Vista del vecino <i data-icon="arrow"></i>
+                  </button>
+                </div>
+                <div class="data-banner">
+                  <i data-icon="info"></i> Datos ficticios de muestra · no son
+                  estadísticas del sitio actual.
+                </div>
+                <div class="metric-grid">
+                  <div>
+                    <span
+                      >Consultas
+                      <button class="number-tag" data-idea="10">
+                        10
+                      </button></span
+                    ><strong>4.280</strong
+                    ><small>Ejemplo · últimos 30 días</small>
+                    <div class="metric-line"></div>
+                  </div>
+                  <div>
+                    <span>Fichas abiertas <i data-icon="shop"></i></span
+                    ><strong>812</strong
+                    ><small>Ejemplo · últimos 30 días</small>
+                    <div class="metric-line two"></div>
+                  </div>
+                  <div>
+                    <span>Clics a WhatsApp <i data-icon="chat"></i></span
+                    ><strong>126</strong
+                    ><small>Clics, no mensajes ni ventas</small>
+                    <div class="metric-line three"></div>
+                  </div>
+                  <div>
+                    <span>Cupones canjeados <i data-icon="tag"></i></span
+                    ><strong>34</strong
+                    ><small>Ejemplo · canjes validados</small>
+                    <div class="metric-line four"></div>
+                  </div>
+                </div>
+                <div class="admin-panels-row">
+                  <section class="admin-card chart-card">
+                    <div class="card-heading">
+                      <div>
+                        <h4>Consultas durante la semana</h4>
+                        <p>Ejemplo de actividad agregada por día</p>
+                      </div>
+                      <button data-idea="10"><i data-icon="more"></i></button>
+                    </div>
+                    <div class="bar-chart">
+                      <div>
+                        <span class="bar bar-1"></span><small>Lun</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-2"></span><small>Mar</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-3"></span><small>Mié</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-4"></span><small>Jue</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-5"></span><small>Vie</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-6"></span><small>Sáb</small>
+                      </div>
+                      <div>
+                        <span class="bar bar-7"></span><small>Dom</small>
+                      </div>
+                    </div>
+                    <div class="search-opportunity">
+                      <span
+                        ><i data-icon="search"></i> Oportunidad de ejemplo</span
+                      >
+                      <p>
+                        Detectar rubros buscados que todavía no tienen
+                        comercios.
+                      </p>
+                    </div>
+                  </section>
+                  <section class="admin-card queue-card">
+                    <div class="card-heading">
+                      <div>
+                        <h4>Solicitudes para revisar</h4>
+                        <p>Ejemplos de una bandeja de aprobación</p>
+                      </div>
+                      <button class="number-tag" data-idea="07">07</button>
+                    </div>
+                    <div class="queue-item">
+                      <span class="business-initial">CU</span>
+                      <div>
+                        <strong>Corte Urbano</strong
+                        ><small>Solicitud de alta</small>
+                      </div>
+                      <button
+                        data-screen="publicar"
+                        aria-label="Revisar solicitud de ejemplo"
+                      >
+                        <i data-icon="arrow"></i>
+                      </button>
+                    </div>
+                    <div class="queue-item">
+                      <span class="business-initial warm">PB</span>
+                      <div>
+                        <strong>Pan del Barrio</strong
+                        ><small>Corrección de horarios</small>
+                      </div>
+                      <button data-idea="07" aria-label="Ver correcciones">
+                        <i data-icon="arrow"></i>
+                      </button>
+                    </div>
+                    <div class="queue-item">
+                      <span class="business-initial teal">CS</span>
+                      <div>
+                        <strong>Calma · Spa</strong
+                        ><small>Reclamo de ficha</small>
+                      </div>
+                      <button
+                        data-idea="08"
+                        aria-label="Ver acceso de comerciantes"
+                      >
+                        <i data-icon="arrow"></i>
+                      </button>
+                    </div>
+                    <button class="card-link" data-idea="07">
+                      Ver bandeja completa <i data-icon="arrow"></i>
+                    </button>
+                  </section>
+                </div>
+                <div class="admin-bottom-row">
+                  <section class="admin-card quality-card">
+                    <div class="card-heading">
+                      <div>
+                        <h4>Mantené los datos al día</h4>
+                        <p>Calidad del catálogo · ejemplo</p>
+                      </div>
+                      <button class="number-tag" data-idea="13">13</button>
+                    </div>
+                    <div class="quality-chips">
+                      <span>Horarios por confirmar <b>3</b></span
+                      ><span>Fotos pendientes <b>2</b></span
+                      ><span>Posibles duplicados <b>1</b></span>
+                    </div>
+                    <button class="card-link" data-idea="13">
+                      Revisar pendientes <i data-icon="arrow"></i>
+                    </button>
+                  </section>
+                  <section class="admin-card campaign-card">
+                    <div class="card-heading">
+                      <div>
+                        <h4>Campañas, con principio y fin.</h4>
+                        <p>Vigencias y espacios patrocinados</p>
+                      </div>
+                      <button class="number-tag" data-idea="09">09</button>
+                    </div>
+                    <div class="campaign-sample">
+                      <span class="shop-photo photo-bakery"></span>
+                      <div>
+                        <strong>Pan del Barrio</strong
+                        ><small>Campaña ficticia · programada</small>
+                      </div>
+                      <span class="status blue">Patrocinado</span>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="board-caption">
+            <span><b>07</b> Solicitudes</span><span><b>08</b> Comerciantes</span
+            ><span><b>09</b> Campañas</span><span><b>10</b> Métricas</span
+            ><span><b>11</b> CSV</span><span><b>12</b> Espacios</span
+            ><span><b>13</b> Calidad</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="publicar"
+        class="review-pane"
+        role="tabpanel"
+        aria-labelledby="tab-publicar"
+        hidden
+      >
+        <div id="publish-capture" class="capture-board">
+          <div class="board-heading">
+            <div>
+              <span class="eyebrow">04 / CENTRO DE PUBLICACIÓN</span>
+              <h2>Revisá antes de que lo vea el barrio.</h2>
+            </div>
+            <span class="sample-label">BOSQUEJO · NO PUBLICA CAMBIOS</span>
+          </div>
+          <div class="publish-mock">
+            <div class="window-bar">
+              <span class="window-dots">● ● ●</span
+              ><span>Tu Barrio Cerca / Comercio de ejemplo</span
+              ><span class="status blue">Borrador</span>
+            </div>
+            <div class="publish-heading">
+              <div>
+                <span class="eyebrow">COMERCIOS / CORTE URBANO</span>
+                <h3>Prepará una ficha que dé confianza.</h3>
+                <p>Editá, mirá la vista previa y elegí cuándo publicar.</p>
+              </div>
+              <button class="number-tag large" data-idea="14">14</button>
+            </div>
+            <div class="publish-layout">
+              <div class="editor-panel">
+                <div class="editor-tabs">
+                  <button
+                    class="active"
+                    data-demo="Esta es la edición de ejemplo de la ficha."
+                  >
+                    Información</button
+                  ><button data-idea="02">Fotos y servicios</button
+                  ><button data-idea="13">Horarios</button
+                  ><button data-idea="14">Historial</button>
+                </div>
+                <label class="edit-field"
+                  >Nombre del comercio<input
+                    id="preview-name-input"
+                    maxlength="40"
+                    value="Corte Urbano"
+                /></label>
+                <div class="editor-two-fields">
+                  <label class="edit-field"
+                    >Barrio<select
+                      id="preview-neighborhood-select"
+                      aria-label="Barrio del comercio de ejemplo"
+                    >
+                      <option>Barrio Centro</option>
+                      <option>Banfield</option>
+                    </select></label
+                  ><label class="edit-field"
+                    >Rubro<select id="preview-category-select">
+                      <option>Barberías</option>
+                      <option>Peluquerías</option>
+                    </select></label
+                  >
+                </div>
+                <label class="edit-field"
+                  >Descripción<textarea
+                    id="preview-description-input"
+                    rows="2"
+                    maxlength="160"
+                  >
+Cortes, barba y un momento para vos. Atención con turno.</textarea>
+                </label>
+                <div class="gallery-editor">
+                  <div class="card-heading">
+                    <h4>Una galería para conocer el local</h4>
+                    <button class="number-tag" data-idea="02">02</button>
+                  </div>
+                  <div>
+                    <span class="shop-photo photo-beauty"></span
+                    ><span class="shop-photo photo-cafe"></span
+                    ><button data-idea="02">
+                      <i data-icon="upload"></i> Agregar foto
+                    </button>
+                  </div>
+                  <small
+                    >Fotos ilustrativas; la propuesta permitiría cargar fotos
+                    autorizadas del negocio.</small
+                  >
+                </div>
+                <div class="review-change">
+                  <span class="number-tag passive">07</span>
+                  <div>
+                    <strong>Corrección enviada por un vecino</strong>
+                    <p>
+                      Ejemplo: «Los sábados atienden con turno hasta las 18».
+                    </p>
+                  </div>
+                  <button data-idea="07">Revisar</button>
+                </div>
+                <div class="publish-actions">
+                  <button
+                    class="button secondary"
+                    data-demo="Borrador simulado. Solo cambió este bosquejo; no se guardó nada en la web real."
+                  >
+                    <i data-icon="save"></i> Guardar borrador</button
+                  ><button class="button primary" data-action="publish">
+                    <i data-icon="check"></i> Publicar (demo)
+                  </button>
+                </div>
+              </div>
+              <aside class="publish-preview">
+                <span class="eyebrow">VISTA PREVIA / EJEMPLO</span>
+                <div class="preview-shop">
+                  <div class="shop-photo photo-beauty"></div>
+                  <div>
+                    <span class="eyebrow"
+                      ><span id="preview-category">BARBERÍAS</span> /
+                      <span id="preview-neighborhood">BARRIO CENTRO</span></span
+                    >
+                    <h3 id="preview-name">Corte Urbano</h3>
+                    <p id="preview-description">
+                      Cortes, barba y un momento para vos. Atención con turno.
+                    </p>
+                    <span class="checked-line"
+                      ><i data-icon="check"></i> Datos revisados · ejemplo</span
+                    ><button
+                      class="button primary full"
+                      data-action="appointment"
+                    >
+                      Solicitar turno
+                    </button>
+                  </div>
+                </div>
+                <div class="publish-checks">
+                  <span><i data-icon="check"></i> Dirección revisada</span
+                  ><span><i data-icon="check"></i> Horarios cargados</span
+                  ><span><i data-icon="check"></i> Fotos autorizadas</span
+                  ><button data-idea="13">
+                    Ver calidad del catálogo <b>13</b>
+                  </button>
+                </div>
+              </aside>
+            </div>
+            <div class="history-strip">
+              <div>
+                <span class="eyebrow">HISTORIAL DE EJEMPLO</span
+                ><strong>Cada cambio, con su versión.</strong>
+              </div>
+              <span><b>v3</b> Borrador actual</span
+              ><span><b>v2</b> Publicada · ejemplo</span
+              ><button data-idea="14">
+                Comparar o restaurar <i data-icon="back"></i>
+              </button>
+            </div>
+          </div>
+          <p class="board-footer-note">
+            Publicación y permisos requieren la base segura de servidor. Esta
+            pantalla es un bosquejo: no crea cuentas, no envía mensajes y no
+            modifica comercios.
+          </p>
+        </div>
+      </section>
+
+      <section
+        id="lista"
+        class="review-pane"
+        role="tabpanel"
+        aria-labelledby="tab-lista"
+        hidden
+      >
+        <div class="ideas-heading">
+          <div>
+            <span class="eyebrow">TU ELECCIÓN, ANTES DE CONSTRUIR</span>
+            <h2>Elegí qué vale la pena sumar.</h2>
+            <p>
+              Los números enlazan cada mejora con los bosquejos. Nada se
+              implementa con estos botones.
+            </p>
+          </div>
+          <div class="selection-summary">
+            <strong id="selection-count">0</strong><span>mejoras marcadas</span
+            ><button class="button secondary" id="copy-selection">
+              <i data-icon="copy"></i> Copiar selección
+            </button>
+          </div>
+        </div>
+        <aside class="base-note">
+          <i data-icon="lock"></i>
+          <div>
+            <strong>Base previa obligatoria</strong>
+            <p>
+              Catálogo compartido, acceso del administrador y permisos por
+              barrio en un servidor. No se cuentan como otra mejora: son la base
+              pendiente de seguridad para las funciones que la necesitan.
+            </p>
+          </div>
+        </aside>
+        <div class="idea-filters" aria-label="Filtrar propuestas">
+          <button class="active" data-idea-filter="todas">Todas</button
+          ><button data-idea-filter="usuarios">Para usuarios</button
+          ><button data-idea-filter="dashboard">Para dashboard</button
+          ><button data-idea-filter="P1">Primera entrega</button>
+        </div>
+        <div id="ideas-grid" class="ideas-grid"></div>
+        <div id="selection-output" hidden>
+          <label for="selection-text"
+            >Selección para compartir por este chat</label
+          ><textarea id="selection-text" rows="5" readonly></textarea>
+          <p>
+            Este texto registra tus preferencias; no autoriza ni ejecuta cambios
+            automáticamente.
+          </p>
+        </div>
+        <div class="release-path">
+          <span class="eyebrow">ORDEN RECOMENDADO</span>
+          <h3>Primero confianza. Después, crecimiento.</h3>
+          <div>
+            <p><b>BASE</b> Datos compartidos y acceso protegido.</p>
+            <p><b>ENTREGA 1</b> 01 · 02 · 07 · 13 · 14</p>
+            <p><b>ENTREGA 2</b> 03 · 04 · 06</p>
+            <p><b>DESPUÉS</b> 05 · 08 · 09 · 10 · 11 · 12</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="review-footer">
+      <span
+        >Tu Barrio Cerca · Propuesta de evolución · 6 de noviembre de 2026</span
+      ><span
+        >Se conserva el diseño A. Las funciones actuales siguen igual.</span
+      >
+    </footer>
+    <dialog id="idea-dialog">
+      <div class="dialog-top">
+        <span class="eyebrow" id="dialog-eyebrow">PROPUESTA</span
+        ><button class="icon-button" data-close aria-label="Cerrar propuesta">
+          <i data-icon="close"></i>
+        </button>
+      </div>
+      <h2 id="dialog-title"></h2>
+      <div id="dialog-body"></div>
+      <div id="dialog-actions"></div>
+    </dialog>
+    <dialog id="action-dialog">
+      <div class="dialog-top">
+        <span class="eyebrow">RECORRIDO SIMULADO</span
+        ><button class="icon-button" data-close aria-label="Cerrar simulación">
+          <i data-icon="close"></i>
+        </button>
+      </div>
+      <h2 id="action-title"></h2>
+      <div id="action-body"></div>
+    </dialog>
+    <div id="toast" role="status" hidden></div>
+  </body>
+</html>
